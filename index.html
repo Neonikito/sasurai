@@ -64,6 +64,17 @@ canvas{display:block;width:100%;height:100%}
 .menu-item:hover::before,.menu-item:hover::after,.menu-item:focus-visible::before,.menu-item:focus-visible::after{transform:translateY(-50%) rotate(45deg) scale(1)}
 :focus-visible{outline:2px solid #d8a445;outline-offset:3px}
 .menu-item:focus-visible{outline:none}
+.slots{display:flex;flex-direction:column;gap:8px;align-items:center;margin:0 auto}
+.slot{display:flex;gap:6px;width:min(400px,86vw)}
+.slot-main{flex:1;display:flex;align-items:center;gap:12px;text-align:left;font:inherit;color:#efe6d2;cursor:pointer;
+  background:rgba(239,230,210,.06);border:1px solid rgba(239,230,210,.22);border-radius:6px;padding:.55em .9em;transition:border-color .2s,background .2s}
+.slot-main:hover,.slot-main:focus-visible{border-color:#c8382a;background:rgba(200,56,42,.12)}
+.slot-n{font-family:"Shippori Mincho","Yu Mincho",Georgia,serif;font-weight:700;font-size:1.3rem;color:#d8a445;min-width:1ch}
+.slot-txt{display:flex;flex-direction:column;line-height:1.35}
+.slot-txt b{font-family:"Shippori Mincho","Yu Mincho",Georgia,serif;font-weight:700;font-size:1rem}
+.slot-txt small{font-size:.78rem;color:#a9a1b8}
+.slot-del{font:inherit;font-size:.75rem;color:#a9a1b8;background:none;border:1px solid rgba(239,230,210,.18);border-radius:6px;padding:0 .7em;cursor:pointer}
+.slot-del:hover,.slot-del:focus-visible{color:#efe6d2;border-color:#c8382a}
 .help{margin:1.2em auto 0;font-size:clamp(.72rem,2vw,.86rem);color:#a9a1b8;max-width:46ch;line-height:1.6}
 .stats{font-size:clamp(.95rem,3vw,1.2rem);margin:.4em 0 1.2em;line-height:1.8;color:#cfc8d9}
 .keys{color:var(--muted);font-size:.82rem;text-align:center;max-width:72ch;line-height:1.6}
@@ -91,6 +102,13 @@ canvas{display:block;width:100%;height:100%}
   .pad button{pointer-events:auto;background:rgba(10,11,22,.45);color:#efe6d2;border-color:rgba(239,230,210,.45)}
   .pad button.locked{opacity:.3}
 }
+.in-menu .pad{visibility:hidden}
+@media (max-height:520px){
+  .overlay .kicker,.overlay .lead,.overlay .help{display:none}
+  .overlay .logo{font-size:clamp(1.8rem,9vh,3rem)}
+  .overlay .flourish{margin:.4em auto .6em}
+  .slot-main{padding:.3em .8em}
+}
 @media (prefers-reduced-motion:reduce){.pad button.on{transform:none}.menu-item::before,.menu-item::after{transition:none}}
 </style>
 </head>
@@ -99,6 +117,7 @@ canvas{display:block;width:100%;height:100%}
   <header class="bar">
     <div class="brand"><span class="mini-seal" aria-hidden="true">浪</span>Sasurai</div>
     <div class="bar-actions">
+      <button class="chip" id="btnMap">Mapa</button>
       <button class="chip" id="btnSound" aria-pressed="true">Sonido: sí</button>
       <button class="chip" id="btnPause">Pausa</button>
     </div>
@@ -113,10 +132,7 @@ canvas{display:block;width:100%;height:100%}
         <h2 class="logo">SASURAI</h2>
         <div class="flourish" aria-hidden="true"><span></span></div>
         <p class="lead">Un ronin sin señor busca la espada de su maestro. Bajá hasta el santuario oculto bajo la montaña y recuperala.</p>
-        <div class="menu">
-          <button class="menu-item" id="btnContinue" hidden>Continuar</button>
-          <button class="menu-item" id="btnNew">Nueva partida</button>
-        </div>
+        <div class="slots" id="slots" role="list" aria-label="Partidas guardadas"></div>
         <p class="help" id="helpText" hidden></p>
       </div>
     </div>
@@ -127,6 +143,7 @@ canvas{display:block;width:100%;height:100%}
         <div class="flourish" aria-hidden="true"><span></span></div>
         <div class="menu">
           <button class="menu-item" id="btnResume">Seguir</button>
+          <button class="menu-item" id="btnMapPause">Mapa</button>
           <button class="menu-item" id="btnToTitle">Volver al inicio</button>
         </div>
       </div>
@@ -156,19 +173,21 @@ canvas{display:block;width:100%;height:100%}
       <button data-k="jump">Saltar</button>
     </div>
   </div>
-  <p class="keys" id="keysHint">Moverse: flechas o A/D. Saltar: Z o espacio (mantené para más altura). Tajo: X — con ↑ corta hacia arriba, con ↓ en el aire corta hacia abajo y rebota. Impulso: C o Shift. Pausa: Esc.</p>
+  <p class="keys" id="keysHint">Moverse: flechas o A/D. Saltar: Z o espacio (mantené para más altura). Tajo: X — con ↑ corta hacia arriba, con ↓ en el aire corta hacia abajo y rebota. Impulso: C o Shift. Mapa: M o Tab. Pausa: Esc.</p>
   <span class="font-warm" aria-hidden="true"><span class="s">鶴居刀灯浪人帰侍焼村竹林城壁塔洞窟社 SASURAI</span>鶴居刀灯浪人</span>
 </main>
 
 <script>
 (() => {
 'use strict';
-
+const WORLD_DATA = [{"key":"aldea-quemada","name":"Aldea quemada","theme":"aldea","x":0,"y":0,"rows":["##############################","#............................#","#............................#","#............................#","#............................#","#............................#","#..............####..........#","#............................#","#............................#","#.........####...............#","#............................#","#............................#","#.............####............","#.............................","#..p.....S....................","##############################","##############################"]},{"key":"bosque-de-bambu","name":"Bosque de bambú","theme":"bambu","x":480,"y":0,"rows":["##############################","#............................#","#............................#","#............................#","#..............f.............#","#............................#","#......####..........####....#","#............................#","#............................#","#............######..........#","#............................#","#............................#","..............................","..............................","....e.................e.......","##############...#############","##############...#############"]},{"key":"muralla-del-castillo","name":"Muralla del castillo","theme":"castillo","x":960,"y":0,"rows":["##############################","#............................#","#.............................","#.............................","#.............................","#.......................######","#.......................######","#..............#####....######","#.......................######","#.......................######","#.......................######","#.......#####...........######","........................######","........................######","..........e.............######","##############################","##############################"]},{"key":"torre-del-vigia","name":"Torre del vigía","theme":"castillo","x":1440,"y":0,"rows":["##############################","#............................#",".............................#","....................f........#",".............................#","####.........................#","#............................#","#............................#","#....#####...................#","#............................#","#............................#","#...........#####............#","#............................#","#............................#","#....S................H......#","##############################","##############################"]},{"key":"cueva-del-pozo","name":"Cueva del pozo","theme":"cueva","x":480,"y":272,"rows":["##############...#############","#............................#","#............................#","#...........#####............#","#............................#","#............................#","#............................#","#................#####.......#","#............................#","#.......f....................#","#............................#","#.....................########","#............................B","#............................B","#..D......e.........e........B","##############################","##############################"]},{"key":"santuario-del-maestro","name":"Santuario del maestro","theme":"templo","x":960,"y":272,"rows":["##############################","####################.........#","####################.........#","####################.........#","####################.........#","####################.........#","####################.........#","####################.........#","#.......############.........#","#.......############.........#","#.......############.........#","#.......############.........#",".............................#",".............................#","...S....^^^^^^^.........R....#","##############################","##############################"]}];
+// ===== 00-config.js =====
 /* ---------- Constantes ---------- */
-const TILE = 16, COLS = 30, ROWS = 17, W = COLS * TILE, H = ROWS * TILE;
+const TILE = 16;
+let COLS = 30, ROWS = 17, W = COLS * TILE, H = ROWS * TILE;   // tamaño de la sala actual: cambia al entrar a cada sala
 const STEP = 1 / 60;
 const RUN = 118, GRAV = 1400, JUMP_V = 385, MAX_FALL = 390, DASH_V = 480, DASH_T = 0.22;
-const SAVE_KEY = 'sasurai-save-v1', PREF_KEY = 'sasurai-prefs';
+const SAVE_KEY = 'sasurai-save-v2', OLD_SAVE_KEY = 'sasurai-save-v1', PREF_KEY = 'sasurai-prefs', SLOTS = 3;
 const SERIF = '"Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", Georgia, serif';
 const SANS = '"Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", system-ui, sans-serif';
 const VIEW_H = 200;            // alto visible del mundo (≈ 12,5 tiles): encuadre amplio estilo Hollow Knight
@@ -199,124 +218,22 @@ const TH = {
               amb: { kind: 'petal', c: [C.sakura, C.kin], vx: -8, vy: 12, rate: .32, from: 'top' } }
 };
 
+// ===== 01-world.js =====
 /* ---------- Mundo ----------
+  Las salas se diseñan en Tiled (carpeta maps/) y tools/build.mjs las incrusta en WORLD_DATA:
+  [{ key, name, theme, x, y, rows }]  — x, y = posición de la sala en el mundo, en píxeles.
+  Cada sala puede tener cualquier tamaño; las transiciones se calculan por posición en el mundo.
+  Caracteres de rows:
   #  terreno       .  vacío        ^  estacas de bambú
   B  barricada de bambú (se corta con el impulso iai)
   p  inicio        S  linterna de piedra (guardado)
   D  salto de grulla   H  impulso iai   R  la espada del maestro
   e  ashigaru      f  onibi (fuego fatuo)
 */
-const DEFS = {
-  '0,0': { name: 'Aldea quemada', theme: 'aldea', map: [
-    '##############################',
-    '#............................#',
-    '#............................#',
-    '#............................#',
-    '#............................#',
-    '#............................#',
-    '#..............####..........#',
-    '#............................#',
-    '#............................#',
-    '#.........####...............#',
-    '#............................#',
-    '#............................#',
-    '#.............####............',
-    '#.............................',
-    '#..p.....S....................',
-    '##############################',
-    '##############################'] },
-  '1,0': { name: 'Bosque de bambú', theme: 'bambu', map: [
-    '##############################',
-    '#............................#',
-    '#............................#',
-    '#............................#',
-    '#..............f.............#',
-    '#............................#',
-    '#......####..........####....#',
-    '#............................#',
-    '#............................#',
-    '#............######..........#',
-    '#............................#',
-    '#............................#',
-    '..............................',
-    '..............................',
-    '....e.................e.......',
-    '##############...#############',
-    '##############...#############'] },
-  '2,0': { name: 'Muralla del castillo', theme: 'castillo', map: [
-    '##############################',
-    '#............................#',
-    '#.............................',
-    '#.............................',
-    '#.............................',
-    '#.......................######',
-    '#.......................######',
-    '#..............#####....######',
-    '#.......................######',
-    '#.......................######',
-    '#.......................######',
-    '#.......#####...........######',
-    '........................######',
-    '........................######',
-    '..........e.............######',
-    '##############################',
-    '##############################'] },
-  '3,0': { name: 'Torre del vigía', theme: 'castillo', map: [
-    '##############################',
-    '#............................#',
-    '.............................#',
-    '....................f........#',
-    '.............................#',
-    '####.........................#',
-    '#............................#',
-    '#............................#',
-    '#....#####...................#',
-    '#............................#',
-    '#............................#',
-    '#...........#####............#',
-    '#............................#',
-    '#............................#',
-    '#....S................H......#',
-    '##############################',
-    '##############################'] },
-  '1,1': { name: 'Cueva del pozo', theme: 'cueva', map: [
-    '##############...#############',
-    '#............................#',
-    '#............................#',
-    '#...........#####............#',
-    '#............................#',
-    '#............................#',
-    '#............................#',
-    '#................#####.......#',
-    '#............................#',
-    '#.......f....................#',
-    '#............................#',
-    '#.....................########',
-    '#............................B',
-    '#............................B',
-    '#..D......e.........e........B',
-    '##############################',
-    '##############################'] },
-  '2,1': { name: 'Santuario del maestro', theme: 'templo', map: [
-    '##############################',
-    '####################.........#',
-    '####################.........#',
-    '####################.........#',
-    '####################.........#',
-    '####################.........#',
-    '####################.........#',
-    '####################.........#',
-    '#.......############.........#',
-    '#.......############.........#',
-    '#.......############.........#',
-    '#.......############.........#',
-    '.............................#',
-    '.............................#',
-    '...S....^^^^^^^.........R....#',
-    '##############################',
-    '##############################'] }
-};
+// Claves de la versión anterior (partidas guardadas v1) → nombres de sala actuales
+const OLD_KEYS = {"0,0": "aldea-quemada", "1,0": "bosque-de-bambu", "2,0": "muralla-del-castillo", "3,0": "torre-del-vigia", "1,1": "cueva-del-pozo", "2,1": "santuario-del-maestro"};
 
+// ===== 02-core.js =====
 /* ---------- Utilidades ---------- */
 const cv = document.getElementById('game');
 const ctx = cv.getContext('2d');
@@ -330,8 +247,22 @@ let prefs = { sound: true };
 try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || '{}')); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} };
 const defaultSave = () => ({ abilities: { double: false, dash: false }, got: [], broken: [], visited: [], shrine: null, time: 0, deaths: 0, done: false });
-function readSave() { try { const s = localStorage.getItem(SAVE_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
-function writeSave() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
+let slot = 1;
+const slotKey = n => SAVE_KEY + '-' + n;
+function readSave(n = slot) { try { const s = localStorage.getItem(slotKey(n)); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+function writeSave() { try { localStorage.setItem(slotKey(slot), JSON.stringify(save)); } catch (e) {} }
+function deleteSave(n) { try { localStorage.removeItem(slotKey(n)); } catch (e) {} }
+// La partida de la versión anterior pasa a la ranura 1
+function migrateOldSave() {
+  try {
+    const raw = localStorage.getItem(OLD_SAVE_KEY);
+    if (!raw || localStorage.getItem(slotKey(1))) return;
+    const s = JSON.parse(raw), mk = k => OLD_KEYS[k] || k, mid = id => { const [r, pos] = id.split(':'); return mk(r) + ':' + pos; };
+    s.visited = (s.visited || []).map(mk); s.got = (s.got || []).map(mid); s.broken = (s.broken || []).map(mid);
+    if (s.shrine) s.shrine.room = mk(s.shrine.room);
+    localStorage.setItem(slotKey(1), JSON.stringify(s)); localStorage.removeItem(OLD_SAVE_KEY);
+  } catch (e) {}
+}
 
 /* ---------- Estado ---------- */
 let save = defaultSave();
@@ -350,15 +281,15 @@ function snapScarf() { for (const s of scarf) { s.x = p.x + 5; s.y = p.y + 5; } 
 
 function buildRooms() {
   rooms = {};
-  for (const key in DEFS) {
-    const [cx, cy] = key.split(',').map(Number);
-    const grid = DEFS[key].map.map(r => r.split(''));
-    const ents = [];
-    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+  for (const d of WORLD_DATA) {
+    const grid = d.rows.map(r => r.split(''));
+    const nr = grid.length, nc = grid[0].length, ents = [];
+    for (let y = 0; y < nr; y++) for (let x = 0; x < nc; x++) {
       const ch = grid[y][x];
       if ('pSDHRef'.includes(ch)) { ents.push({ t: ch, x, y }); grid[y][x] = '.'; }
     }
-    rooms[key] = { key, cx, cy, name: DEFS[key].name, theme: DEFS[key].theme, grid, ents, art: null, seed: cx * 7919 + cy * 104729 + 13 };
+    rooms[d.key] = { key: d.key, name: d.name, theme: d.theme, x: d.x, y: d.y, nc, nr, w: nc * TILE, h: nr * TILE, grid, ents, art: null,
+      seed: Math.round(d.x / 480 * 7919 + d.y / 272 * 104729) + 13 };
   }
   for (const b of save.broken) {
     const [rk, pos] = b.split(':'); const [x, y] = pos.split(',').map(Number);
@@ -366,14 +297,21 @@ function buildRooms() {
   }
 }
 function invalidateArt() { for (const k in rooms) rooms[k].art = null; }
+function setRoomDims(r) { COLS = r.nc; ROWS = r.nr; W = r.w; H = r.h; }
+function roomAt(wx, wy) {
+  for (const k in rooms) { const r = rooms[k]; if (wx >= r.x && wx < r.x + r.w && wy >= r.y && wy < r.y + r.h) return r; }
+  return null;
+}
 
 const tileAt = (tx, ty) => (tx < 0 || tx >= COLS || ty < 0 || ty >= ROWS) ? '.' : cur.grid[ty][tx];
 const isSolid = (tx, ty) => { const c = tileAt(tx, ty); return c === '#' || c === 'B'; };
 
+// ===== 03-rooms.js =====
 /* ---------- Sala y entidades ---------- */
 function enterRoom(key) {
   if (cur && cur.key !== key) cur.art = null;   // liberar memoria del arte de la sala anterior
   cur = rooms[key];
+  setRoomDims(cur); computeScale();
   enemies = []; pickups = []; shrines = []; amb = []; splats = []; corpses = []; strokes = []; rain = [];
   if (!cur.deco) cur.deco = buildDeco(cur);
   for (const tf of cur.deco.tufts) { tf.cut = false; tf.b = 0; }
@@ -392,6 +330,7 @@ function enterRoom(key) {
 
 function spawnAtShrine() {
   const sh = save.shrine;
+  if (!rooms[sh.room]) { save.shrine = null; return setupStart(); }
   enterRoom(sh.room);
   p.x = sh.tx * TILE + 3; p.y = (sh.ty + 1) * TILE - p.h;
   p.vx = p.vy = 0; p.hp = p.maxHp; p.inv = 0; p.dashT = 0; p.knockT = 0; p.atShrine = true;
@@ -401,18 +340,20 @@ function spawnAtShrine() {
 function setupWorld(fresh) {
   save = fresh ? defaultSave() : (readSave() || defaultSave());
   buildRooms();
-  if (!save.shrine) {
-    const a = rooms['0,0'];
-    const sp = a.ents.find(e => e.t === 'p'), sh = a.ents.find(e => e.t === 'S');
-    save.shrine = { room: '0,0', tx: sh.x, ty: sh.y };
-    enterRoom('0,0');
-    p.x = sp.x * TILE + 3; p.y = (sp.y + 1) * TILE - p.h; p.face = 1;
-    p.vx = p.vy = 0; p.hp = p.maxHp; p.lastSafe = { x: p.x, y: p.y }; snapScarf(); snapCam();
-  } else spawnAtShrine();
+  if (!save.shrine) setupStart(); else spawnAtShrine();
   particles = []; banner = null; fade = 1;
   updatePadLocks();
 }
+function setupStart() {
+  const a = Object.values(rooms).find(r => r.ents.some(e => e.t === 'p'));
+  const sp = a.ents.find(e => e.t === 'p'), sh = a.ents.find(e => e.t === 'S') || sp;
+  save.shrine = { room: a.key, tx: sh.x, ty: sh.y };
+  enterRoom(a.key);
+  p.x = sp.x * TILE + 3; p.y = (sp.y + 1) * TILE - p.h; p.face = 1;
+  p.vx = p.vy = 0; p.hp = p.maxHp; p.lastSafe = { x: p.x, y: p.y }; snapScarf(); snapCam();
+}
 
+// ===== 04-physics.js =====
 /* ---------- Física ---------- */
 function moveX(o, dx, canBreak) {
   if (!dx) return false;
@@ -460,6 +401,7 @@ function breakWall(tx, ty) {
   shake = 0.25; hitstop = 0.06; sfx('break'); writeSave();
 }
 
+// ===== 05-particles.js =====
 /* ---------- Partículas ---------- */
 function burst(x, y, n, colors, spd = 120, grav = 500) {
   for (let i = 0; i < n; i++) {
@@ -579,6 +521,7 @@ function updateWorld(dt) {
   }
 }
 
+// ===== 06-input.js =====
 /* ---------- Entrada ---------- */
 const keys = { left: false, right: false, up: false, down: false, jump: false, dash: false, attack: false };
 const pressed = { jump: false, dash: false, attack: false };
@@ -586,7 +529,8 @@ const KEYMAP = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'ri
   KeyX: 'attack', KeyJ: 'attack', KeyC: 'dash', ShiftLeft: 'dash', ShiftRight: 'dash', KeyK: 'dash' };
 function press(k) { if (!keys[k] && k in pressed) pressed[k] = true; keys[k] = true; }
 addEventListener('keydown', e => {
-  if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'play' || state === 'pause') { togglePause(); e.preventDefault(); } return; }
+  if ((e.code === 'KeyM' || e.code === 'Tab') && !e.repeat) { if (state === 'play' || state === 'map') { toggleMap(); e.preventDefault(); } return; }
+  if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'map') toggleMap(); else if (state === 'play' || state === 'pause') togglePause(); e.preventDefault(); return; }
   const k = KEYMAP[e.code]; if (!k || state !== 'play') return;
   e.preventDefault(); ensureAudio(); press(k);
 });
@@ -607,6 +551,7 @@ pad.querySelectorAll('[data-k]').forEach(b => {
 });
 function updatePadLocks() { pad.querySelector('[data-k="dash"]').classList.toggle('locked', !save.abilities.dash); }
 
+// ===== 07-audio.js =====
 /* ---------- Sonido ---------- */
 let actx = null;
 function ensureAudio() {
@@ -614,7 +559,7 @@ function ensureAudio() {
   if (actx.state === 'suspended') actx.resume();
 }
 const SFX = { jump: [520, 780, .08, 'square'], dbl: [660, 1180, .12, 'triangle'], dash: [1400, 220, .14, 'sawtooth'], hit: [260, 70, .12, 'square'],
-  hurt: [180, 50, .3, 'sawtooth'], pogo: [300, 900, .1, 'triangle'], pick: [523, 1568, .5, 'triangle'], save: [392, 784, .45, 'triangle'], slash: [1800, 500, .07, 'sawtooth'],
+  hurt: [180, 50, .3, 'sawtooth'], pogo: [300, 900, .1, 'triangle'], ui: [660, 880, .06, 'triangle'], pick: [523, 1568, .5, 'triangle'], save: [392, 784, .45, 'triangle'], slash: [1800, 500, .07, 'sawtooth'],
   break: [160, 50, .25, 'square'], kill: [420, 90, .22, 'square'], lunge: [220, 330, .2, 'square'] };
 function sfx(name) {
   if (!prefs.sound || !actx) return;
@@ -624,6 +569,7 @@ function sfx(name) {
   o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + s[2] + 0.02);
 }
 
+// ===== 08-player.js =====
 /* ---------- Jugador ---------- */
 function updatePlayer(dt) {
   const ab = save.abilities;
@@ -715,18 +661,15 @@ function die() {
 
 function checkTransition() {
   const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
-  let nx = 0, ny = 0;
-  if (cx > W) nx = 1; else if (cx < 0) nx = -1; else if (cy > H) ny = 1; else if (cy < 0) ny = -1;
-  if (!nx && !ny) return;
-  const next = rooms[(cur.cx + nx) + ',' + (cur.cy + ny)];
-  if (!next) { p.x = Math.max(0, Math.min(W - p.w, p.x)); p.y = Math.max(0, Math.min(H - p.h, p.y)); return; }
-  if (nx > 0) p.x = -p.w / 2 + 1;
-  if (nx < 0) p.x = W - p.w / 2 - 1;
-  if (ny > 0) p.y = -p.h / 2 + 1;
-  if (ny < 0) p.y = H - p.h / 2 - 1;
+  if (cx <= W && cx >= 0 && cy <= H && cy >= 0) return;
+  // la sala de destino es la que contiene el centro del ronin en coordenadas del mundo
+  const next = roomAt(cur.x + cx, cur.y + cy);
+  if (!next || next === cur) { p.x = Math.max(0, Math.min(W - p.w, p.x)); p.y = Math.max(0, Math.min(H - p.h, p.y)); return; }
+  p.x += cur.x - next.x; p.y += cur.y - next.y;
   enterRoom(next.key); snapScarf(); snapCam(); fade = Math.max(fade, 0.55);
 }
 
+// ===== 09-enemies.js =====
 /* ---------- Enemigos ---------- */
 function inkSpray(x, y, n, dir, spd, red) {
   for (let i = 0; i < n; i++) {
@@ -879,6 +822,7 @@ function interactions() {
 
 function showBanner(kanji, title, sub, t) { banner = { kanji, title, sub, t, max: t }; }
 
+// ===== 10-loop.js =====
 /* ---------- Bucle ---------- */
 function step(dt) {
   clock += dt;
@@ -919,6 +863,7 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+// ===== 20-camera.js =====
 /* ---------- Cámara y escala ---------- */
 let S = 4, VW = W, VH = VIEW_H, artGen = 0, vignette = null, ui = 1;
 const cam = { x: 0, y: 0, look: 0 };
@@ -1036,6 +981,7 @@ function grassClump(g, x, base, hgt, color, rnd, n = 9) {
   }
 }
 
+// ===== 21-backgrounds.js =====
 /* ---------- Capas de fondo (parallax) ---------- */
 function makeLayer(f, draw) {
   const lw = VW + (W - VW) * f, lh = VH + (H - VH) * f;
@@ -1161,6 +1107,8 @@ function drawFg(room, T, g, w, h) {
   if (room.theme === 'bambu') for (let i = 0; i < 2; i++) bamboo(g, (i + .3 + r() * .4) * w / 2, -10, h + 10, 5 + r() * 2, 'rgba(2,8,8,.9)', 'rgba(10,25,25,.9)', r, false);
   g.globalAlpha = 1;
 }
+
+// ===== 22-terrain.js =====
 /* ---------- Terreno ---------- */
 function buildTerrain(room) {
   const T = TH[room.theme], c = mk(W * S, H * S), g = c.getContext('2d');
@@ -1415,6 +1363,8 @@ function ensureArt(room) {
   }
   if (!A.terrain) A.terrain = buildTerrain(room);
 }
+
+// ===== 23-entities-art.js =====
 /* ---------- Entidades ---------- */
 function isLit(s) { return save.shrine && save.shrine.room === cur.key && save.shrine.tx === s.tx && save.shrine.ty === s.ty; }
 function drawToro(g, x, y, lit, t) {
@@ -1675,6 +1625,7 @@ function drawAmb(g) {
   g.globalAlpha = 1;
 }
 
+// ===== 24-scenery.js =====
 /* ---------- Escenario vivo y tinta ---------- */
 const inView = (x, m = 30) => x > cam.x - m && x < cam.x + VW + m;
 function drawSplats(g) {
@@ -1764,6 +1715,7 @@ function drawStrokes(g) {
   }
 }
 
+// ===== 25-light.js =====
 /* ---------- Luz ---------- */
 let light = mk(10, 10), lg = light.getContext('2d');
 function buildVignette() {
@@ -1808,6 +1760,8 @@ function drawRays(t) {
   }
   ctx.restore();
 }
+
+// ===== 26-hud.js =====
 /* ---------- Interfaz ---------- */
 function drawMask(g, x, y, full, t, i) {
   g.save(); g.translate(x, y);
@@ -1851,15 +1805,18 @@ function drawHUD(t) {
     g.strokeStyle = 'rgba(216,164,69,.8)'; g.lineWidth = 1; g.beginPath(); g.arc(ax, 52, 9, 0, TAU); g.stroke();
     g.fillStyle = k === '居' ? '#ff8a6a' : '#efe6d2'; g.font = `700 11px ${SERIF}`; g.fillText(k, ax, 52.5); ax += 22;
   }
-  // minimapa
-  const cs = 13, mx = sw - 14 - 4 * cs, my = 14;
-  g.fillStyle = 'rgba(6,6,14,.5)'; g.fillRect(mx - 6, my - 6, 4 * cs + 12, 2 * cs + 12);
-  for (const k in rooms) {
-    if (!save.visited.includes(k)) continue;
-    const r = rooms[k], X = mx + r.cx * cs, Y = my + r.cy * cs;
-    g.fillStyle = k === cur.key ? '#efe6d2' : 'rgba(239,230,210,.28)'; g.fillRect(X + 1, Y + 1, cs - 2, cs - 2);
-    if (save.shrine && save.shrine.room === k) { g.fillStyle = C.kin; circle(g, X + cs / 2, Y + cs / 2, 1.8); }
-  }
+  // minimapa: salas visitadas alrededor de la actual
+  { const bw = 78, bh = 44, mx = sw - 14 - bw, my = 12, k = 1 / 26;
+    g.save(); g.fillStyle = 'rgba(6,6,14,.5)'; g.fillRect(mx, my, bw, bh); g.beginPath(); g.rect(mx, my, bw, bh); g.clip();
+    const ox = mx + bw / 2 - (cur.x + p.x) * k, oy = my + bh / 2 - (cur.y + p.y) * k;
+    for (const key of save.visited) {
+      const r = rooms[key]; if (!r) continue;
+      g.fillStyle = key === cur.key ? 'rgba(239,230,210,.85)' : 'rgba(239,230,210,.28)';
+      g.fillRect(ox + r.x * k + .6, oy + r.y * k + .6, r.w * k - 1.2, r.h * k - 1.2);
+      if (save.shrine && save.shrine.room === key) { g.fillStyle = C.kin; circle(g, ox + (r.x + save.shrine.tx * TILE) * k, oy + (r.y + save.shrine.ty * TILE) * k, 1.6); }
+    }
+    g.fillStyle = C.shu; circle(g, mx + bw / 2, my + bh / 2, 1.8);
+    g.restore(); }
   // título de zona
   if (roomLabel && state === 'play') {
     const k = roomLabel.t / roomLabel.max, a = Math.min(1, (1 - k) * 4, k * 3);
@@ -1900,6 +1857,7 @@ function wrapText(g, str, x, y, maxW, lh) {
   if (line) g.fillText(line, x, yy);
 }
 
+// ===== 27-render.js =====
 /* ---------- Composición ---------- */
 function drawLayer(L, ox, oy) {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -1997,25 +1955,105 @@ function render(t) {
   if (flashT > 0 && !REDUCED) { ctx.fillStyle = `rgba(255,248,230,${flashT * 1.6})`; ctx.fillRect(0, 0, pw, ph); }
 
   if (state === 'play' || state === 'pause') drawHUD(t);
+  if (state === 'map') drawMapScreen(t);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   if (fade > 0 && state !== 'title') { ctx.fillStyle = `rgba(2,2,8,${Math.min(1, fade)})`; ctx.fillRect(0, 0, pw, ph); }
 }
 
+// ===== 28-map.js =====
+/* ---------- Mapa ---------- */
+// Pantalla completa de mapa (M o Tab): muestra la forma real de cada sala visitada.
+function toggleMap() {
+  if (state === 'play' || state === 'pause') { state = 'map'; show(null); for (const k in keys) keys[k] = false; sfx('ui'); }
+  else if (state === 'map') { state = 'play'; }
+}
+function drawMapScreen(t) {
+  const g = ctx, pw = cv.width, ph = cv.height;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.fillStyle = 'rgba(5,5,12,.94)'; g.fillRect(0, 0, pw, ph);
+  const u = Math.max(.7, Math.min(2.4, ph / 430)); g.setTransform(u, 0, 0, u, 0, 0);
+  const sw = pw / u, sh = ph / u;
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = '#efe6d2'; g.font = `700 22px ${SERIF}`; g.fillText('Mapa', sw / 2, 30);
+  g.strokeStyle = 'rgba(239,230,210,.5)'; g.lineWidth = 1; g.beginPath(); g.moveTo(sw / 2 - 70, 48); g.lineTo(sw / 2 + 70, 48); g.stroke();
+  const vis = save.visited.map(k => rooms[k]).filter(Boolean);
+  if (!vis.length) return;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const r of vis) { x0 = Math.min(x0, r.x); y0 = Math.min(y0, r.y); x1 = Math.max(x1, r.x + r.w); y1 = Math.max(y1, r.y + r.h); }
+  const areaW = sw - 60, areaH = sh - 120, k = Math.min(areaW / (x1 - x0), areaH / (y1 - y0), .4);
+  const ox = sw / 2 - (x0 + x1) / 2 * k, oy = 62 + areaH / 2 - (y0 + y1) / 2 * k;
+  const c = k * TILE;
+  for (const r of vis) {
+    const rx = ox + r.x * k, ry = oy + r.y * k, here = r === cur;
+    // interior: celdas libres en papel, terreno en tinta
+    g.fillStyle = 'rgba(239,230,210,.05)'; g.fillRect(rx, ry, r.w * k, r.h * k);
+    g.fillStyle = here ? 'rgba(239,230,210,.42)' : 'rgba(239,230,210,.24)';
+    g.beginPath();   // un solo relleno: sin costuras entre celdas
+    for (let y = 0; y < r.nr; y++) for (let x = 0; x < r.nc; x++) {
+      const ch = r.grid[y][x];
+      if (ch !== '#' && ch !== 'B') g.rect(rx + x * c - .2, ry + y * c - .2, c + .4, c + .4);
+    }
+    g.fill();
+    g.strokeStyle = here ? C.shu : 'rgba(239,230,210,.45)'; g.lineWidth = here ? 1.6 : 1;
+    g.strokeRect(rx, ry, r.w * k, r.h * k);
+    if (r.w * k > 60) { g.fillStyle = here ? '#efe6d2' : 'rgba(239,230,210,.6)'; g.font = `500 ${Math.min(11, r.w * k / 9)}px ${SANS}`; g.fillText(r.name, rx + r.w * k / 2, ry + r.h * k + 8); }
+    if (save.shrine && save.shrine.room === r.key) {
+      const sx = rx + (save.shrine.tx + .5) * c, sy = ry + (save.shrine.ty + .5) * c;
+      g.fillStyle = C.kin; g.save(); g.translate(sx, sy); g.rotate(Math.PI / 4); g.fillRect(-2.6, -2.6, 5.2, 5.2); g.restore();
+    }
+  }
+  // posición del ronin
+  const px = ox + (cur.x + p.x + p.w / 2) * k, py = oy + (cur.y + p.y + p.h / 2) * k, pulse = 3 + Math.sin(t * 5) * 1;
+  g.fillStyle = 'rgba(200,56,42,.35)'; circle(g, px, py, pulse + 3);
+  g.fillStyle = C.shu; circle(g, px, py, 2.6);
+  // leyenda
+  g.font = `400 11px ${SANS}`; g.fillStyle = 'rgba(239,230,210,.7)';
+  const touch = document.documentElement.classList.contains('touch');
+  const l1 = `${vis.length} de ${Object.keys(rooms).length} salas visitadas`, l2 = `◆ linterna  ·  ● vos  ·  ${touch ? 'tocá Mapa para cerrar' : 'M o Tab para cerrar'}`;
+  if (g.measureText(l1 + '  ·  ' + l2).width < sw - 24) g.fillText(l1 + '  ·  ' + l2, sw / 2, sh - 18);
+  else { g.fillText(l1, sw / 2, sh - 32); g.fillText(l2, sw / 2, sh - 16); }
+}
+
+// ===== 30-screens.js =====
 /* ---------- Pantallas ---------- */
 const ov = { title: document.getElementById('ovTitle'), pause: document.getElementById('ovPause'), win: document.getElementById('ovWin') };
-function show(name) { for (const k in ov) ov[k].hidden = k !== name; }
+function show(name) { for (const k in ov) ov[k].hidden = k !== name; document.documentElement.classList.toggle('in-menu', !!name); }
 function fmtTime(s) { const m = Math.floor(s / 60), ss = Math.floor(s % 60); return m + ':' + String(ss).padStart(2, '0'); }
 
 function refreshTitle() {
-  const s = readSave();
-  document.getElementById('btnContinue').hidden = !(s && !s.done && s.time > 1);
+  const box = document.getElementById('slots'); box.textContent = '';
+  for (let n = 1; n <= SLOTS; n++) {
+    const s = readSave(n), row = document.createElement('div'), main = document.createElement('button');
+    row.className = 'slot'; row.setAttribute('role', 'listitem'); main.className = 'slot-main';
+    const num = document.createElement('span'); num.className = 'slot-n'; num.textContent = n;
+    const txt = document.createElement('span'); txt.className = 'slot-txt';
+    const b = document.createElement('b'), sm = document.createElement('small');
+    if (s) {
+      const zone = rooms[s.shrine && s.shrine.room] ? rooms[s.shrine.room].name : '—';
+      const ab = (s.abilities.double ? ' 鶴' : '') + (s.abilities.dash ? ' 居' : '');
+      b.textContent = s.done ? 'Completada' : zone;
+      sm.textContent = `${fmtTime(s.time)} · ${s.deaths} ${s.deaths === 1 ? 'caída' : 'caídas'}${ab ? ' ·' + ab : ''}`;
+      main.onclick = () => { if (s.done && !confirm(`¿Empezar una partida nueva en la ranura ${n}? Se reemplaza la completada.`)) return; startGame(n, !!s.done); };
+    } else {
+      b.textContent = 'Nueva partida'; sm.textContent = 'Ranura vacía';
+      main.onclick = () => startGame(n, true);
+    }
+    txt.append(b, sm); main.append(num, txt); row.append(main);
+    if (s) {
+      const del = document.createElement('button'); del.className = 'slot-del'; del.textContent = 'Borrar';
+      del.setAttribute('aria-label', `Borrar la partida de la ranura ${n}`);
+      del.onclick = () => { if (confirm(`¿Borrar la partida de la ranura ${n}? No se puede deshacer.`)) { deleteSave(n); refreshTitle(); } };
+      row.append(del);
+    }
+    box.append(row);
+  }
   if (document.documentElement.classList.contains('touch')) {
     const h = document.getElementById('helpText'); h.hidden = false;
     h.textContent = 'Usá los botones de abajo. Mantené Saltar para llegar más alto. Girá el teléfono para jugar a pantalla ancha.';
   }
 }
-function startGame(fresh) {
-  ensureAudio(); setupWorld(fresh);
+function startGame(n, fresh) {
+  slot = n; ensureAudio(); setupWorld(fresh);
   if (fresh) { writeSave(); showBanner('浪', 'Sasurai', 'La espada de tu maestro descansa bajo la montaña.', 3.6); }
   state = 'play'; show(null);
 }
@@ -2029,21 +2067,18 @@ function win() {
   show('win'); document.getElementById('btnAgain').focus();
 }
 
-document.getElementById('btnNew').onclick = () => {
-  const s = readSave();
-  if (s && !s.done && s.time > 1 && !confirm('¿Empezar de cero? Se borra la partida guardada.')) return;
-  startGame(true);
-};
-document.getElementById('btnContinue').onclick = () => startGame(false);
 document.getElementById('btnResume').onclick = togglePause;
-document.getElementById('btnToTitle').onclick = () => { state = 'title'; refreshTitle(); show('title'); };
-document.getElementById('btnAgain').onclick = () => startGame(true);
+document.getElementById('btnToTitle').onclick = () => { writeSave(); state = 'title'; refreshTitle(); show('title'); };
+document.getElementById('btnAgain').onclick = () => startGame(slot, true);
+document.getElementById('btnMap').onclick = () => { if (state === 'play' || state === 'pause' || state === 'map') toggleMap(); };
+document.getElementById('btnMapPause').onclick = () => toggleMap();
 document.getElementById('btnPause').onclick = () => { if (state === 'play' || state === 'pause') togglePause(); };
 const btnSound = document.getElementById('btnSound');
 function syncSound() { btnSound.textContent = prefs.sound ? 'Sonido: sí' : 'Sonido: no'; btnSound.setAttribute('aria-pressed', String(prefs.sound)); }
 btnSound.onclick = () => { prefs.sound = !prefs.sound; savePrefs(); syncSound(); ensureAudio(); };
 syncSound();
 
+// ===== 31-layout.js =====
 /* ---------- Tamaño ---------- */
 const stage = document.getElementById('stage'), bar = document.querySelector('.bar'), hint = document.getElementById('keysHint');
 function fit() {
@@ -2064,14 +2099,21 @@ function resizeCanvas(w, h) {
   const k = Math.min(1, 1100 / ph, 2000 / pw); pw = Math.round(pw * k); ph = Math.round(ph * k);
   if (pw === cv.width && ph === cv.height && vignette) return;
   cv.width = pw; cv.height = ph;
-  S = ph / VIEW_H; if (pw / S < MIN_VW) S = pw / MIN_VW; S = Math.max(S, pw / W, ph / H); VW = pw / S; VH = ph / S;
-  artGen++; buildVignette(); if (!washiPat) buildWashi();
+  vignette = null; computeScale(); if (!washiPat) buildWashi();
   if (cur) { snapCam(); amb = []; ambSeeded = false; }
+}
+// Zoom: alto visible fijo (VIEW_H), pero nunca más grande que la sala actual
+function computeScale() {
+  const pw = cv.width, ph = cv.height;
+  let s = ph / VIEW_H; if (pw / s < MIN_VW) s = pw / MIN_VW; s = Math.max(s, pw / W, ph / H);
+  if (Math.abs(s - S) > 1e-6 || !vignette) { S = s; VW = pw / S; VH = ph / S; artGen++; buildVignette(); }
 }
 addEventListener('resize', fit);
 addEventListener('orientationchange', () => setTimeout(fit, 150));
 
+// ===== 99-init.js =====
 /* ---------- Inicio ---------- */
+migrateOldSave();
 fit();
 setupWorld(false);
 refreshTitle(); show('title');
@@ -2079,6 +2121,7 @@ if (document.fonts) {
   Promise.all([document.fonts.ready, document.fonts.load(`700 20px ${SERIF}`, '鶴居刀浪Sasurai'), document.fonts.load(`400 12px ${SANS}`, 'Pulsá')]).then(() => { invalidateArt(); }).catch(() => {});
 }
 requestAnimationFrame(frame);
+
 })();
 </script>
 </body>

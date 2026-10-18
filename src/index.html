@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sasurai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+:root{
+  --page:#e9e2d2; --ink:#16182b; --muted:#625c70; --frame:#16182b; --shu:#c8382a;
+  --pad-bg:rgba(22,24,43,.88); --pad-ink:#efe6d2; --pad-ring:rgba(239,230,210,.45); --pad-on:#c8382a;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --page:#0a0b16; --ink:#efe6d2; --muted:#9a93ab; --frame:#2a2d4a;
+    --pad-bg:rgba(239,230,210,.1); --pad-ink:#efe6d2; --pad-ring:rgba(239,230,210,.4);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#0a0b16; --ink:#efe6d2; --muted:#9a93ab; --frame:#2a2d4a;
+  --pad-bg:rgba(239,230,210,.1); --pad-ink:#efe6d2; --pad-ring:rgba(239,230,210,.4);
+  color-scheme:dark;
+}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  height:100%;background:var(--page);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior:none;
+}
+.app{max-width:1600px;margin:0 auto;padding:8px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:10px;min-height:100%}
+.bar{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.brand{display:flex;align-items:center;gap:9px;font-family:"Shippori Mincho","Yu Mincho",Georgia,serif;font-weight:700;font-size:1.2rem;letter-spacing:.06em}
+.brand .mini-seal{display:inline-grid;place-items:center;width:1.6em;height:1.6em;background:var(--shu);color:#efe6d2;font-size:.75em;line-height:1;border-radius:3px}
+.bar-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.chip{font:inherit;font-size:.82rem;font-weight:500;background:transparent;color:var(--ink);border:1px solid currentColor;border-radius:999px;padding:4px 12px;cursor:pointer;opacity:.85}
+.chip:hover{opacity:1;background:var(--ink);color:var(--page)}
+.stage{position:relative;background:#05060c;border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px var(--frame),0 18px 50px -18px rgba(0,0,0,.6);touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;color:#efe6d2;text-align:center;padding:5%;overflow:auto;
+  background:radial-gradient(ellipse at 50% 45%,rgba(6,7,16,.35),rgba(4,4,10,.86) 75%)}
+.overlay[hidden]{display:none}
+.serif{font-family:"Shippori Mincho","Yu Mincho","Hiragino Mincho ProN",Georgia,serif}
+.kicker{font-size:clamp(.75rem,2vw,.95rem);letter-spacing:.6em;color:#d8a445;margin-bottom:.6em;padding-left:.6em}
+.logo{font-family:"Shippori Mincho","Yu Mincho",Georgia,serif;font-weight:700;font-size:clamp(2.6rem,11vw,6rem);line-height:1;letter-spacing:.1em;padding-left:.1em;
+  text-shadow:0 0 30px rgba(239,230,210,.25)}
+.flourish{display:flex;align-items:center;justify-content:center;gap:.7em;margin:.7em auto 1em;color:#c8382a}
+.flourish::before,.flourish::after{content:"";height:1px;width:clamp(50px,16vw,140px);background:linear-gradient(90deg,transparent,rgba(239,230,210,.7),transparent)}
+.flourish span{width:.55em;height:.55em;background:currentColor;transform:rotate(45deg)}
+.lead{max-width:38ch;margin:0 auto 1.4em;font-size:clamp(.85rem,2.4vw,1.05rem);line-height:1.7;color:#cfc8d9}
+.menu{display:flex;flex-direction:column;gap:.25em;align-items:center}
+.menu-item{position:relative;font-family:"Shippori Mincho","Yu Mincho",Georgia,serif;font-weight:500;font-size:clamp(1.05rem,3vw,1.35rem);letter-spacing:.08em;
+  background:none;border:0;color:#efe6d2;padding:.35em 1.6em;cursor:pointer;opacity:.78;transition:opacity .2s}
+.menu-item::before,.menu-item::after{content:"";position:absolute;top:50%;width:.42em;height:.42em;background:#c8382a;transform:translateY(-50%) rotate(45deg) scale(0);transition:transform .2s}
+.menu-item::before{left:.4em}.menu-item::after{right:.4em}
+.menu-item:hover,.menu-item:focus-visible{opacity:1}
+.menu-item:hover::before,.menu-item:hover::after,.menu-item:focus-visible::before,.menu-item:focus-visible::after{transform:translateY(-50%) rotate(45deg) scale(1)}
+:focus-visible{outline:2px solid #d8a445;outline-offset:3px}
+.menu-item:focus-visible{outline:none}
+.slots{display:flex;flex-direction:column;gap:8px;align-items:center;margin:0 auto}
+.slot{display:flex;gap:6px;width:min(400px,86vw)}
+.slot-main{flex:1;display:flex;align-items:center;gap:12px;text-align:left;font:inherit;color:#efe6d2;cursor:pointer;
+  background:rgba(239,230,210,.06);border:1px solid rgba(239,230,210,.22);border-radius:6px;padding:.55em .9em;transition:border-color .2s,background .2s}
+.slot-main:hover,.slot-main:focus-visible{border-color:#c8382a;background:rgba(200,56,42,.12)}
+.slot-n{font-family:"Shippori Mincho","Yu Mincho",Georgia,serif;font-weight:700;font-size:1.3rem;color:#d8a445;min-width:1ch}
+.slot-txt{display:flex;flex-direction:column;line-height:1.35}
+.slot-txt b{font-family:"Shippori Mincho","Yu Mincho",Georgia,serif;font-weight:700;font-size:1rem}
+.slot-txt small{font-size:.78rem;color:#a9a1b8}
+.slot-del{font:inherit;font-size:.75rem;color:#a9a1b8;background:none;border:1px solid rgba(239,230,210,.18);border-radius:6px;padding:0 .7em;cursor:pointer}
+.slot-del:hover,.slot-del:focus-visible{color:#efe6d2;border-color:#c8382a}
+.help{margin:1.2em auto 0;font-size:clamp(.72rem,2vw,.86rem);color:#a9a1b8;max-width:46ch;line-height:1.6}
+.stats{font-size:clamp(.95rem,3vw,1.2rem);margin:.4em 0 1.2em;line-height:1.8;color:#cfc8d9}
+.keys{color:var(--muted);font-size:.82rem;text-align:center;max-width:72ch;line-height:1.6}
+.pad{display:none;width:100%;max-width:560px;justify-content:space-between;align-items:flex-end;gap:12px;user-select:none;-webkit-user-select:none;touch-action:none}
+.touch .pad{display:flex;margin-top:auto}
+.touch .keys{display:none}
+.pad button{font:inherit;font-weight:700;font-size:.9rem;color:var(--pad-ink);background:var(--pad-bg);border:1.5px solid var(--pad-ring);border-radius:50%;touch-action:none;cursor:pointer;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.pad button.on{background:var(--pad-on);border-color:var(--pad-on);color:#efe6d2;transform:scale(.94)}
+.pad button.locked{opacity:.35}
+.pad-move{display:grid;grid-template-areas:". up ." "left . right" ". down .";grid-template-columns:repeat(3,58px);grid-template-rows:46px 58px 46px;gap:2px 4px;align-items:center;justify-items:center}
+.pad-move button{width:62px;height:62px;font-size:1.3rem}
+.pad-move [data-k="up"],.pad-move [data-k="down"]{width:48px;height:48px;font-size:1rem}
+.pad-move [data-k="up"]{grid-area:up}.pad-move [data-k="down"]{grid-area:down}.pad-move [data-k="left"]{grid-area:left}.pad-move [data-k="right"]{grid-area:right}
+.pad-act{display:grid;grid-template-areas:". dash" "atk jump";gap:10px;align-items:end;justify-items:end}
+.pad-act [data-k="dash"]{grid-area:dash;width:72px;height:72px;font-size:.74rem}
+.pad-act [data-k="attack"]{grid-area:atk;width:70px;height:70px}
+.pad-act [data-k="jump"]{grid-area:jump;width:86px;height:86px;font-size:1rem}
+.font-warm{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+.font-warm .s{font-family:"Shippori Mincho"}
+@media (orientation:landscape) and (pointer:coarse){
+  .app{padding-top:2px;gap:4px}
+  .bar{font-size:.9em}
+  .touch .pad{position:fixed;left:0;right:0;max-width:none;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);padding:0 calc(env(safe-area-inset-right,0px) + 16px) 0 calc(env(safe-area-inset-left,0px) + 16px);pointer-events:none}
+  .pad button{pointer-events:auto;background:rgba(10,11,22,.45);color:#efe6d2;border-color:rgba(239,230,210,.45)}
+  .pad button.locked{opacity:.3}
+}
+.in-menu .pad{visibility:hidden}
+@media (max-height:520px){
+  .overlay .kicker,.overlay .lead,.overlay .help{display:none}
+  .overlay .logo{font-size:clamp(1.8rem,9vh,3rem)}
+  .overlay .flourish{margin:.4em auto .6em}
+  .slot-main{padding:.3em .8em}
+}
+@media (prefers-reduced-motion:reduce){.pad button.on{transform:none}.menu-item::before,.menu-item::after{transition:none}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="bar">
+    <div class="brand"><span class="mini-seal" aria-hidden="true">浪</span>Sasurai</div>
+    <div class="bar-actions">
+      <button class="chip" id="btnMap">Mapa</button>
+      <button class="chip" id="btnSound" aria-pressed="true">Sonido: sí</button>
+      <button class="chip" id="btnPause">Pausa</button>
+    </div>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="game" width="960" height="540" aria-label="Pantalla del juego Sasurai"></canvas>
+
+    <div class="overlay" id="ovTitle">
+      <div>
+        <p class="kicker serif">浪 人 の 旅</p>
+        <h2 class="logo">SASURAI</h2>
+        <div class="flourish" aria-hidden="true"><span></span></div>
+        <p class="lead">Un ronin sin señor busca la espada de su maestro. Bajá hasta el santuario oculto bajo la montaña y recuperala.</p>
+        <div class="slots" id="slots" role="list" aria-label="Partidas guardadas"></div>
+        <p class="help" id="helpText" hidden></p>
+      </div>
+    </div>
+
+    <div class="overlay" id="ovPause" hidden>
+      <div>
+        <h2 class="logo" style="font-size:clamp(1.8rem,7vw,3.4rem)">Pausa</h2>
+        <div class="flourish" aria-hidden="true"><span></span></div>
+        <div class="menu">
+          <button class="menu-item" id="btnResume">Seguir</button>
+          <button class="menu-item" id="btnMapPause">Mapa</button>
+          <button class="menu-item" id="btnToTitle">Volver al inicio</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="ovWin" hidden>
+      <div>
+        <p class="kicker serif">帰 刀</p>
+        <h2 class="logo" style="font-size:clamp(1.6rem,6.5vw,3.4rem);letter-spacing:.04em">Recuperaste la espada</h2>
+        <div class="flourish" aria-hidden="true"><span></span></div>
+        <p class="stats" id="winStats"></p>
+        <div class="menu"><button class="menu-item" id="btnAgain">Jugar de nuevo</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pad" id="pad" aria-label="Controles táctiles">
+    <div class="pad-move">
+      <button data-k="up" aria-label="Arriba">▲</button>
+      <button data-k="left" aria-label="Izquierda">◀</button>
+      <button data-k="right" aria-label="Derecha">▶</button>
+      <button data-k="down" aria-label="Abajo">▼</button>
+    </div>
+    <div class="pad-act">
+      <button data-k="dash" class="locked">Impulso</button>
+      <button data-k="attack">Tajo</button>
+      <button data-k="jump">Saltar</button>
+    </div>
+  </div>
+  <p class="keys" id="keysHint">Moverse: flechas o A/D. Saltar: Z o espacio (mantené para más altura). Tajo: X — con ↑ corta hacia arriba, con ↓ en el aire corta hacia abajo y rebota. Impulso: C o Shift. Mapa: M o Tab. Pausa: Esc.</p>
+  <span class="font-warm" aria-hidden="true"><span class="s">鶴居刀灯浪人帰侍焼村竹林城壁塔洞窟社 SASURAI</span>鶴居刀灯浪人</span>
+</main>
+
+<script>
+/*@@GAME@@*/
+</script>
+</body>
+</html>

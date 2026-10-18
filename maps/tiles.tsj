@@ -1,0 +1,57 @@
+{
+ "type": "tileset",
+ "version": "1.10",
+ "tiledversion": "1.10.2",
+ "name": "sasurai",
+ "tilewidth": 16,
+ "tileheight": 16,
+ "tilecount": 10,
+ "columns": 10,
+ "image": "tiles.png",
+ "imagewidth": 160,
+ "imageheight": 16,
+ "margin": 0,
+ "spacing": 0,
+ "tiles": [
+  {
+   "id": 0,
+   "type": "terreno"
+  },
+  {
+   "id": 1,
+   "type": "estacas"
+  },
+  {
+   "id": 2,
+   "type": "barricada"
+  },
+  {
+   "id": 3,
+   "type": "inicio"
+  },
+  {
+   "id": 4,
+   "type": "linterna"
+  },
+  {
+   "id": 5,
+   "type": "grulla"
+  },
+  {
+   "id": 6,
+   "type": "iai"
+  },
+  {
+   "id": 7,
+   "type": "espada"
+  },
+  {
+   "id": 8,
+   "type": "ashigaru"
+  },
+  {
+   "id": 9,
+   "type": "onibi"
+  }
+ ]
+}

@@ -2,12 +2,12 @@
 
 Metroidvania plataformero de un ronin en el Japón feudal, jugable en el navegador. Un samurái sin señor busca la espada de su maestro, escondida en un santuario bajo la montaña.
 
-Todo el juego vive en un solo archivo: `index.html` (HTML + CSS + JavaScript, Canvas 2D, sin dependencias ni build). Estilo visual inspirado en Hollow Knight / Silksong con identidad propia de tinta sumi-e (contornos a pincel, salpicaduras que manchan el escenario, enemigos que se disuelven en tinta, textura de papel washi): cámara que sigue al personaje con zoom, arte vectorial en alta resolución, fondos en capas con parallax, primer plano en silueta, niebla, rayos de luz, iluminación dinámica, bloom, etalonaje por zona y escenarios vivos (pasto que se mueve y se corta, faroles que se balancean, estandartes al viento, lluvia, goteras y luciérnagas).
+Estilo visual inspirado en Hollow Knight / Silksong con identidad propia de tinta sumi-e: contornos a pincel, salpicaduras que manchan el escenario, enemigos que se disuelven en tinta, textura de papel washi, fondos en capas con parallax, iluminación dinámica, bloom, etalonaje por zona y escenarios vivos (pasto que se mueve y se corta, faroles que se balancean, estandartes, lluvia, goteras y luciérnagas).
 
 ## Cómo jugarlo
 
-- Abrí `index.html` en cualquier navegador moderno, o
-- jugalo desde GitHub Pages (si está activado: Settings → Pages → rama `main`, carpeta raíz).
+- En GitHub Pages: https://neonikito.github.io/sasurai/
+- O abriendo `index.html` en cualquier navegador moderno (es el juego ya compilado, no necesita nada más).
 
 ## Controles
 
@@ -19,40 +19,64 @@ Todo el juego vive en un solo archivo: `index.html` (HTML + CSS + JavaScript, Ca
 | Tajo hacia arriba | ↑ o W + tajo | ▲ + Tajo |
 | Tajo hacia abajo en el aire (rebota sobre enemigos y estacas) | ↓ o S + tajo | ▼ + Tajo |
 | Impulso iai | C, Shift o K | Impulso |
+| Mapa | M o Tab | Botón Mapa |
 | Pausa | Esc o P | Botón Pausa |
 
-## Qué incluye el MVP
+Hay 3 ranuras de partida en la pantalla de inicio. Cada linterna de piedra guarda en la ranura elegida.
 
-- 6 zonas conectadas: Aldea quemada, Bosque de bambú, Muralla del castillo, Torre del vigía, Cueva del pozo y Santuario del maestro.
-- Dos habilidades que abren caminos: **salto de grulla** (doble salto) e **impulso iai** (dash que corta enemigos y barricadas de bambú).
-- Enemigos: **ashigaru** con lanza (avisan y embisten) y **onibi** (fuegos fatuos que flotan).
-- Estacas de bambú, linternas de piedra que guardan la partida, minimapa y pantalla final con tiempo y caídas.
-- Fondos con parallax, luna, bambú, castillo y torii; partículas de ambiente por zona (brasas, hojas, pétalos).
-- Bufanda animada del ronin, hitstop en los golpes, controles táctiles y sonidos con Web Audio.
+## Estructura del proyecto
 
-## Cómo editar el mapa
+```
+index.html            el juego compilado (lo que se publica)
+src/index.html        HTML y CSS, con el lugar donde se inserta el código
+src/js/               el código, dividido por tema; se une en orden numérico
+  00-config.js          constantes, física y paletas de cada zona
+  01-world.js           formato de las salas
+  02-core.js            utilidades, guardado por ranuras y carga de salas
+  03-rooms.js           entrar a una sala, aparecer en linternas
+  04-physics.js … 10-loop.js     física, partículas, entrada, sonido, jugador, enemigos y bucle
+  20-camera.js … 28-map.js       cámara, fondos, terreno, personajes, luz, interfaz, render y mapa
+  30-screens.js … 99-init.js     pantallas, tamaño de pantalla e inicio
+maps/                 las salas, en formato Tiled
+  sasurai.world         dónde está cada sala en el mundo
+  tiles.tsj, tiles.png  el tileset (terreno y entidades)
+  *.tmj                 una sala por archivo
+tools/build.mjs       compila todo en index.html
+```
 
-Las salas están en el objeto `DEFS` dentro de `index.html`: cada una es una grilla de 30 × 17 caracteres con un tema visual (`aldea`, `bambu`, `castillo`, `cueva`, `templo`).
+## Compilar
 
-| Carácter | Significado |
+Necesitás [Node.js](https://nodejs.org) 18 o más nuevo. No hay dependencias que instalar.
+
+```
+node tools/build.mjs
+```
+
+Genera `index.html` y avisa si alguna salida de una sala no lleva a ningún lado.
+
+## Cómo editar y crear salas con Tiled
+
+1. Instalá [Tiled](https://www.mapeditor.org) (gratis).
+2. Abrí `maps/sasurai.world` desde *Archivo → Abrir archivo o proyecto*. Vas a ver todas las salas en su lugar del mundo.
+3. Cada sala tiene dos capas de tiles:
+   - **terreno**: terreno, estacas y barricadas.
+   - **entidades**: inicio, linternas, habilidades, la espada y enemigos.
+4. Cada sala tiene dos propiedades personalizadas: `nombre` (el que aparece en pantalla) y `tema` (`aldea`, `bambu`, `castillo`, `cueva` o `templo`).
+5. Para una sala nueva: *Archivo → Nuevo mapa* con tiles de 16 × 16 y el tamaño que quieras (una pantalla son unas 22 × 13 tiles; las salas pueden ser mucho más grandes). Usá el tileset `tiles.tsj`, creá las dos capas y las dos propiedades, guardala en `maps/` y arrastrala al mundo.
+6. Las salidas se conectan solas: si el borde de una sala toca a otra en el mundo y hay espacio libre en los dos lados, se puede pasar.
+7. Corré `node tools/build.mjs` y abrí `index.html`.
+
+| Tile | Qué es |
 |---|---|
-| `#` | Terreno |
-| `.` | Vacío |
-| `^` | Estacas de bambú |
-| `B` | Barricada de bambú (se corta con el impulso) |
-| `p` | Inicio del jugador |
-| `S` | Linterna de piedra (guardado) |
-| `D` | Salto de grulla |
-| `H` | Impulso iai |
-| `R` | La espada del maestro (final) |
-| `e` | Ashigaru |
-| `f` | Onibi |
+| terreno | Suelo y paredes |
+| estacas | Estacas de bambú (lastiman) |
+| barricada | Barricada de bambú (se corta con el impulso) |
+| inicio | Dónde empieza la partida (uno solo en todo el mundo) |
+| linterna | Linterna de piedra: guarda la partida y restaura la vida |
+| grulla / iai | Habilidades: doble salto e impulso |
+| espada | La espada del maestro (termina el juego) |
+| ashigaru / onibi | Enemigos |
 
-La clave de cada sala (`'1,0'`, `'2,1'`…) es su posición en el mapa. Las salidas tienen que coincidir con la sala vecina en las mismas filas o columnas.
+## Roadmap
 
-## Próximas ideas
-
-- Salto en pared y una zona que lo requiera.
-- Parry con la katana.
-- Un jefe ronin en el santuario.
-- Mejoras de vida escondidas y música ambiente.
+El plan completo (progresión, mapas, secretos, habilidades, zonas, enemigos, jefes, omamori, historia, audio y lanzamiento) está en el documento de roadmap del proyecto. Fase actual: **1 · Cimientos**.

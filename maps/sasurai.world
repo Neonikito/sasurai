@@ -1,0 +1,48 @@
+{
+ "maps": [
+  {
+   "fileName": "aldea-quemada.tmj",
+   "x": 0,
+   "y": 0,
+   "width": 480,
+   "height": 272
+  },
+  {
+   "fileName": "bosque-de-bambu.tmj",
+   "x": 480,
+   "y": 0,
+   "width": 480,
+   "height": 272
+  },
+  {
+   "fileName": "muralla-del-castillo.tmj",
+   "x": 960,
+   "y": 0,
+   "width": 480,
+   "height": 272
+  },
+  {
+   "fileName": "torre-del-vigia.tmj",
+   "x": 1440,
+   "y": 0,
+   "width": 480,
+   "height": 272
+  },
+  {
+   "fileName": "cueva-del-pozo.tmj",
+   "x": 480,
+   "y": 272,
+   "width": 480,
+   "height": 272
+  },
+  {
+   "fileName": "santuario-del-maestro.tmj",
+   "x": 960,
+   "y": 272,
+   "width": 480,
+   "height": 272
+  }
+ ],
+ "onlyShowAdjacentMaps": false,
+ "type": "world"
+}
