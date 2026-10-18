@@ -2,7 +2,7 @@
 
 Metroidvania plataformero de un ronin en el Japón feudal, jugable en el navegador. Un samurái sin señor busca la espada de su maestro, escondida en un santuario bajo la montaña.
 
-Todo el juego vive en un solo archivo: `index.html` (HTML + CSS + JavaScript, Canvas 2D, sin dependencias ni build). Tiene dos vistas: **píxel** y **ASCII** (tecla V o el botón de la barra).
+Todo el juego vive en un solo archivo: `index.html` (HTML + CSS + JavaScript, Canvas 2D, sin dependencias ni build). Estilo visual inspirado en Hollow Knight / Silksong: cámara que sigue al personaje con zoom, arte vectorial en alta resolución, fondos en capas con parallax, primer plano en silueta, niebla, rayos de luz e iluminación dinámica.
 
 ## Cómo jugarlo
 
@@ -17,7 +17,6 @@ Todo el juego vive en un solo archivo: `index.html` (HTML + CSS + JavaScript, Ca
 | Saltar (mantené para saltar más alto) | Z, espacio, W o ↑ | Saltar |
 | Tajo de katana | X o J | Tajo |
 | Impulso iai | C, Shift o K | Impulso |
-| Cambiar vista píxel/ASCII | V | Botón de la barra |
 | Pausa | Esc o P | Botón Pausa |
 
 ## Qué incluye el MVP
