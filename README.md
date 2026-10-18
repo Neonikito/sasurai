@@ -2,7 +2,7 @@
 
 Metroidvania plataformero de un ronin en el Japón feudal, jugable en el navegador. Un samurái sin señor busca la espada de su maestro, escondida en un santuario bajo la montaña.
 
-Todo el juego vive en un solo archivo: `index.html` (HTML + CSS + JavaScript, Canvas 2D, sin dependencias ni build). Estilo visual inspirado en Hollow Knight / Silksong: cámara que sigue al personaje con zoom, arte vectorial en alta resolución, fondos en capas con parallax, primer plano en silueta, niebla, rayos de luz e iluminación dinámica.
+Todo el juego vive en un solo archivo: `index.html` (HTML + CSS + JavaScript, Canvas 2D, sin dependencias ni build). Estilo visual inspirado en Hollow Knight / Silksong con identidad propia de tinta sumi-e (contornos a pincel, salpicaduras que manchan el escenario, enemigos que se disuelven en tinta, textura de papel washi): cámara que sigue al personaje con zoom, arte vectorial en alta resolución, fondos en capas con parallax, primer plano en silueta, niebla, rayos de luz, iluminación dinámica, bloom, etalonaje por zona y escenarios vivos (pasto que se mueve y se corta, faroles que se balancean, estandartes al viento, lluvia, goteras y luciérnagas).
 
 ## Cómo jugarlo
 
@@ -14,8 +14,10 @@ Todo el juego vive en un solo archivo: `index.html` (HTML + CSS + JavaScript, Ca
 | Acción | Teclado | Táctil |
 |---|---|---|
 | Moverse | Flechas o A/D | ◀ ▶ |
-| Saltar (mantené para saltar más alto) | Z, espacio, W o ↑ | Saltar |
+| Saltar (mantené para saltar más alto) | Z o espacio | Saltar |
 | Tajo de katana | X o J | Tajo |
+| Tajo hacia arriba | ↑ o W + tajo | ▲ + Tajo |
+| Tajo hacia abajo en el aire (rebota sobre enemigos y estacas) | ↓ o S + tajo | ▼ + Tajo |
 | Impulso iai | C, Shift o K | Impulso |
 | Pausa | Esc o P | Botón Pausa |
 
