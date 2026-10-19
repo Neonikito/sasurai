@@ -1,5 +1,15 @@
 /* ---------- Escenario vivo y tinta ---------- */
 const inView = (x, m = 30) => x > cam.x - m && x < cam.x + VW + m;
+function drawPocketCover(g) {
+  const T = TH[cur.theme];
+  const paint = (set, a) => {
+    g.globalAlpha = a; g.fillStyle = T.rock; g.beginPath();
+    for (const k of set) { const [x, y] = k.split(',').map(Number); g.rect(x * TILE - .5, y * TILE - .5, TILE + 1, TILE + 1); }
+    g.fill(); g.globalAlpha = 1;
+  };
+  if (cur.pocket) paint(cur.pocket, 1);
+  if (cur.reveal > 0 && cur.oldPocket) { paint(cur.oldPocket, cur.reveal); cur.reveal = Math.max(0, cur.reveal - 1 / 50); if (!cur.reveal) cur.oldPocket = null; }
+}
 function drawSplats(g) {
   for (const sp of splats) {
     if (!inView(sp.x)) continue;

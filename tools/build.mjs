@@ -11,7 +11,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rd = p => fs.readFileSync(path.join(root, p), 'utf8');
 const TILE = 16;
 const THEMES = ['aldea', 'bambu', 'castillo', 'cueva', 'templo'];
-const CHAR = { terreno: '#', estacas: '^', barricada: 'B', inicio: 'p', linterna: 'S', grulla: 'D', iai: 'H', espada: 'R', ashigaru: 'e', onibi: 'f' };
+const CHAR = { terreno: '#', estacas: '^', barricada: 'B', inicio: 'p', linterna: 'S', grulla: 'D', iai: 'H', espada: 'R', ashigaru: 'e', onibi: 'f', agrietada: 'X', porton: 'G', palanca: 'L', fragmento: 'M' };
 const errors = [], warnings = [];
 
 // ---- Tileset: id de tile → carácter del juego ----
@@ -38,7 +38,7 @@ for (const m of world.maps) {
   if (map.infinite) errors.push(`${where}: el mapa no puede ser infinito`);
   if (m.x % TILE || m.y % TILE) errors.push(`${where}: su posición en el mundo debe ser múltiplo de ${TILE} px`);
   const prop = n => (map.properties || []).find(q => q.name === n)?.value;
-  const name = prop('nombre') || key, theme = prop('tema') || 'aldea';
+  const name = prop('nombre') || key, theme = prop('tema') || 'aldea', zone = prop('zona') || name;
   if (!THEMES.includes(theme)) errors.push(`${where}: tema "${theme}" desconocido (usá ${THEMES.join(', ')})`);
   const ts = map.tilesets[0], tmap = loadTileset(ts.source);
   const w = map.width, h = map.height;
@@ -53,10 +53,16 @@ for (const m of world.maps) {
     });
   }
   const rows = grid.map(r => r.join(''));
-  if (!rows.some(r => /[pSDHRef]/.test(r)) && !rows.some(r => r.includes('.'))) warnings.push(`${where}: está vacía`);
-  rooms.push({ key, name, theme, x: m.x, y: m.y, rows });
+  if (!rows.some(r => /[pSDHRefLM]/.test(r)) && !rows.some(r => r.includes('.'))) warnings.push(`${where}: está vacía`);
+  rooms.push({ key, name, zone, theme, x: m.x, y: m.y, rows });
 }
 if (rooms.filter(r => r.rows.some(row => row.includes('p'))).length !== 1) errors.push('Tiene que haber exactamente un tile de "inicio" en todo el mundo');
+
+// ---- Salas superpuestas ----
+for (let i = 0; i < rooms.length; i++) for (let j = i + 1; j < rooms.length; j++) {
+  const a = rooms[i], b = rooms[j], aw = a.rows[0].length * TILE, ah = a.rows.length * TILE, bw = b.rows[0].length * TILE, bh = b.rows.length * TILE;
+  if (a.x < b.x + bw && a.x + aw > b.x && a.y < b.y + bh && a.y + ah > b.y) errors.push(`Las salas "${a.key}" y "${b.key}" se superponen en el mundo`);
+}
 
 // ---- Salidas sin destino: celdas abiertas en el borde que no dan a otra sala ----
 // las barricadas (B) cuentan como paso: se rompen con el impulso

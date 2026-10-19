@@ -58,7 +58,8 @@ function render(t) {
   drawSplats(ctx);
   drawBanners(ctx, t);
   for (const s of shrines) drawToro(ctx, s.tx * TILE + 8, (s.ty + 1) * TILE, isLit(s), t);
-  for (const k of pickups) drawPickup(ctx, k, t);
+  for (const k of pickups) if (!inPocket(cur, k.x + 6, k.y + 6)) drawPickup(ctx, k, t);
+  for (const lv of levers) drawLever(ctx, lv, t);
   for (const e of enemies) if (e.alive) { if (e.kind === 'ashi') drawAshigaru(ctx, e, t); else drawOnibi(ctx, e, t); }
   drawCorpses(ctx, t);
   drawGhosts(ctx);
@@ -69,6 +70,7 @@ function render(t) {
   drawParticles(ctx);
   drawStrokes(ctx);
   drawRain(ctx);
+  drawPocketCover(ctx);
 
   drawLighting(t, sx, sy);
 

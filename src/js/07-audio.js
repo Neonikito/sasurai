@@ -5,7 +5,7 @@ function ensureAudio() {
   if (actx.state === 'suspended') actx.resume();
 }
 const SFX = { jump: [520, 780, .08, 'square'], dbl: [660, 1180, .12, 'triangle'], dash: [1400, 220, .14, 'sawtooth'], hit: [260, 70, .12, 'square'],
-  hurt: [180, 50, .3, 'sawtooth'], pogo: [300, 900, .1, 'triangle'], ui: [660, 880, .06, 'triangle'], pick: [523, 1568, .5, 'triangle'], save: [392, 784, .45, 'triangle'], slash: [1800, 500, .07, 'sawtooth'],
+  hurt: [180, 50, .3, 'sawtooth'], pogo: [300, 900, .1, 'triangle'], ui: [660, 880, .06, 'triangle'], secret: [330, 1320, .6, 'triangle'], lever: [140, 70, .25, 'square'], pick: [523, 1568, .5, 'triangle'], save: [392, 784, .45, 'triangle'], slash: [1800, 500, .07, 'sawtooth'],
   break: [160, 50, .25, 'square'], kill: [420, 90, .22, 'square'], lunge: [220, 330, .2, 'square'] };
 function sfx(name) {
   if (!prefs.sound || !actx) return;

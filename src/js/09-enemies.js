@@ -11,6 +11,51 @@ function addSplat(x, y, c, r) {
   for (let i = 0; i < n; i++) pts.push(r * (.6 + Math.random() * .6));
   splats.push({ x, y, c, r, pts, rot: Math.random() * 6, t: 14 });
 }
+// Paredes agrietadas: dos tajos rompen todo el bloque conectado
+function hitWalls(hb) {
+  if (p.hitSet.has('wall')) return;
+  for (let ty = Math.floor(hb.y / TILE); ty <= Math.floor((hb.y + hb.h) / TILE); ty++)
+    for (let tx = Math.floor(hb.x / TILE); tx <= Math.floor((hb.x + hb.w) / TILE); tx++) {
+      if (tx < 0 || ty < 0 || tx >= COLS || ty >= ROWS || cur.grid[ty][tx] !== 'X') continue;
+      p.hitSet.add('wall'); hitstop = 0.05; shake = Math.max(shake, 0.12); sfx('hit');
+      for (let i = 0; i < 8; i++) particles.push({ x: tx * TILE + 8, y: ty * TILE + 8, vx: (Math.random() - .5) * 140, vy: -40 - Math.random() * 90, life: .6, max: .6, c: TH[cur.theme].rockHi, s: 1.1, g: 600 });
+      cur.cracks = cur.cracks || {};
+      const k = tx + ',' + ty; cur.cracks[k] = (cur.cracks[k] || 0) + 1;
+      if (cur.cracks[k] >= 2) breakWallGroup(tx, ty);
+      return;
+    }
+}
+function breakWallGroup(sx, sy) {
+  const todo = [[sx, sy]];
+  while (todo.length) {
+    const [x, y] = todo.pop();
+    if (x < 0 || y < 0 || x >= COLS || y >= ROWS || cur.grid[y][x] !== 'X') continue;
+    cur.grid[y][x] = '.'; save.broken.push(cur.key + ':' + x + ',' + y);
+    for (let i = 0; i < 5; i++) particles.push({ x: x * TILE + Math.random() * 16, y: y * TILE + Math.random() * 16, vx: (Math.random() - .5) * 120, vy: -30 - Math.random() * 80, life: .8, max: .8, c: i % 2 ? TH[cur.theme].rock : TH[cur.theme].edge, s: 1.4, g: 650 });
+    todo.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+  if (cur.art) cur.art.terrain = null;
+  cur.deco = buildDeco(cur);
+  cur.oldPocket = cur.pocket; cur.reveal = 1; computePocket(cur);
+  shake = 0.3; sfx('secret'); writeSave();
+}
+// Palanca: abre los portones que estén cerca en el mundo (también en salas vecinas)
+function pullLever(lv) {
+  lv.on = true; lv.swing = 1; save.levers.push(lv.id); sfx('lever'); shake = 0.25; hitstop = 0.06;
+  const lx = cur.x + lv.x + 5, ly = cur.y + lv.y + 8;
+  let opened = 0;
+  for (const k in rooms) {
+    const r = rooms[k];
+    for (let y = 0; y < r.nr; y++) for (let x = 0; x < r.nc; x++) {
+      if (r.grid[y][x] !== 'G' || Math.hypot(r.x + x * TILE + 8 - lx, r.y + y * TILE + 8 - ly) > 200) continue;
+      r.grid[y][x] = '.'; save.broken.push(k + ':' + x + ',' + y); opened++;
+      if (r === cur) for (let i = 0; i < 4; i++) particles.push({ x: x * TILE + Math.random() * 16, y: y * TILE + 8, vx: (Math.random() - .5) * 80, vy: -40 - Math.random() * 60, life: .7, max: .7, c: '#6a4a2c', s: 1.2, g: 600 });
+    }
+    if (r.art) r.art.terrain = null;
+  }
+  if (opened) showBanner('開', 'Se abrió un portón', 'Quedó libre un atajo.', 2.6);
+  writeSave();
+}
 function damageEnemy(e, dir, aim) {
   e.hp--; e.hurt = 0.2; hitstop = 0.06; sfx('hit');
   if (e.kind === 'ashi') { e.kbT = 0.15; e.kb = dir * 150; e.vy = aim === 'up' ? -230 : aim === 'down' ? 60 : -140; e.dir = -dir; e.st = 'walk'; e.cd = 0.8; }
@@ -84,6 +129,8 @@ function combat() {
             break;
           }
     }
+    hitWalls(hb);
+    for (const lv of levers) if (!lv.on && !p.hitSet.has(lv) && overlap(hb, lv)) { p.hitSet.add(lv); pullLever(lv); }
     const deco = cur.deco;   // pasto que se corta, faroles que se golpean
     for (const tf of deco.tufts) if (!tf.cut && overlap(hb, { x: tf.x - 3, y: tf.y - 6, w: 6, h: 6 })) {
       tf.cut = true;
@@ -142,6 +189,11 @@ function interactions() {
     } else if (k.t === 'H') {
       save.abilities.dash = true; sfx('pick'); updatePadLocks();
       showBanner('居', 'Impulso iai', (touch ? 'Tocá Impulso para desenvainar y lanzarte.' : 'Pulsá C o Shift para desenvainar y lanzarte.') + ' Corta enemigos y barricadas de bambú.', 4.8);
+    } else if (k.t === 'M') {
+      save.frags = (save.frags || 0) + 1; sfx('pick');
+      const n = save.frags % 4;
+      if (n === 0) { p.maxHp = maxHpFor(save); p.hp = p.maxHp; showBanner('面', 'Máscara completa', 'Tu vida máxima aumentó en una máscara.', 3.6); }
+      else showBanner('面', 'Fragmento de máscara', `${n} de 4. Juntá cuatro para tener una máscara más.`, 3.2);
     } else if (k.t === 'R') { sfx('pick'); win(); }
     writeSave();
   }

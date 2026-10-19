@@ -13,7 +13,7 @@ function drawToro(g, x, y, lit, t) {
   g.fillStyle = st; g.fillRect(-1.1, -21.2, 2.2, 1.7); circle(g, 0, -21.8, 1.1);
   g.restore();
 }
-const PK = { D: { k: '鶴', c: C.washi, rgb: '239,230,210' }, H: { k: '居', c: C.shu, rgb: '230,90,60' }, R: { k: '刀', c: C.kin, rgb: '230,180,80' } };
+const PK = { M: { k: '面', c: C.washi, rgb: '239,230,210' }, D: { k: '鶴', c: C.washi, rgb: '239,230,210' }, H: { k: '居', c: C.shu, rgb: '230,90,60' }, R: { k: '刀', c: C.kin, rgb: '230,180,80' } };
 function drawPickup(g, k, t) {
   const P = PK[k.t], x = k.x + 6, y = k.y + 6 + Math.sin(t * 2.2 + k.bob) * 2;
   g.save(); g.globalCompositeOperation = 'lighter';
@@ -22,10 +22,30 @@ function drawPickup(g, k, t) {
   softGlow(g, x, y, 22, P.rgb, .5);
   g.strokeStyle = rgba(P.rgb, .5 - ((t * .8) % 1) * .5); g.lineWidth = .6; g.beginPath(); g.arc(x, y, 6 + ((t * .8) % 1) * 12, 0, TAU); g.stroke();
   g.restore();
+  if (k.t === 'M') {   // fragmento de máscara: un cuarto de máscara blanca con borde roto
+    g.save(); g.translate(x, y); g.rotate(Math.sin(t * 1.6 + k.bob) * .15);
+    g.fillStyle = '#f2ead8'; g.beginPath(); g.moveTo(0, 8); g.bezierCurveTo(-6.5, 4, -7, -5, 0, -7.5);
+    g.lineTo(1.2, -4); g.lineTo(-.6, -1); g.lineTo(1.6, 2); g.lineTo(0, 8); g.fill();
+    g.fillStyle = '#16182b'; ellipse(g, -2.6, -.6, 1.5, 2.2, .35);
+    g.strokeStyle = 'rgba(3,2,8,.8)'; g.lineWidth = .4; g.stroke();
+    g.restore(); return;
+  }
   g.fillStyle = '#3a2418'; g.fillRect(x - 6.5, y - 8, 13, 2); g.fillRect(x - 6.5, y + 6, 13, 2);
   g.fillStyle = '#efe4c8'; g.fillRect(x - 5, y - 6.2, 10, 12.4);
   g.fillStyle = C.kin; circle(g, x - 6.7, y - 7, .9); circle(g, x + 6.7, y - 7, .9); circle(g, x - 6.7, y + 7, .9); circle(g, x + 6.7, y + 7, .9);
   g.fillStyle = k.t === 'D' ? C.ink : P.c; g.font = `700 8px ${SERIF}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(P.k, x, y + .4);
+}
+function drawLever(g, lv, t) {
+  const x = lv.x + 5, y = lv.y + 16;
+  lv.swing = Math.max(0, lv.swing - 1 / 40);
+  g.fillStyle = '#3a2a1c'; g.fillRect(x - 4, y - 3, 8, 3);
+  g.fillStyle = '#2a1d14'; g.fillRect(x - 2.5, y - 6, 5, 3.5);
+  const a = (lv.on ? .7 : -.7) + Math.sin(lv.swing * 14) * lv.swing * .3;
+  g.save(); g.translate(x, y - 5); g.rotate(a);
+  g.strokeStyle = '#6a4a2c'; g.lineWidth = 1.3; g.lineCap = 'round'; g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -10); g.stroke();
+  g.fillStyle = lv.on ? '#8a8070' : C.shu; circle(g, 0, -10.5, 1.6);
+  g.restore();
+  if (!lv.on) { g.save(); g.globalCompositeOperation = 'lighter'; softGlow(g, x, y - 14, 10, '230,90,60', .25 + Math.sin(t * 3) * .1); g.restore(); }
 }
 function drawAshigaru(g, e, t, mono) {
   const flash = !!mono || (e.hurt > 0 && Math.floor(t * 30) % 2 === 0), FL = mono || '#fff';

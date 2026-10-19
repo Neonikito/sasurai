@@ -5,10 +5,10 @@
  "name": "sasurai",
  "tilewidth": 16,
  "tileheight": 16,
- "tilecount": 10,
- "columns": 10,
+ "tilecount": 14,
+ "columns": 14,
  "image": "tiles.png",
- "imagewidth": 160,
+ "imagewidth": 224,
  "imageheight": 16,
  "margin": 0,
  "spacing": 0,
@@ -52,6 +52,22 @@
   {
    "id": 9,
    "type": "onibi"
+  },
+  {
+   "id": 10,
+   "type": "agrietada"
+  },
+  {
+   "id": 11,
+   "type": "porton"
+  },
+  {
+   "id": 12,
+   "type": "palanca"
+  },
+  {
+   "id": 13,
+   "type": "fragmento"
   }
  ]
 }

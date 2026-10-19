@@ -48,7 +48,7 @@ function updateAmb(dt) {
 function buildDeco(room) {
   const r = seeded(room.seed + 777), T = TH[room.theme], g = room.grid;
   const at = (x, y) => (x < 0 || x >= COLS || y < 0 || y >= ROWS) ? '#' : g[y][x];
-  const isOpen = (x, y) => { const c = at(x, y); return c !== '#' && c !== 'B'; };
+  const isOpen = (x, y) => { const c = at(x, y); return !'#BXG'.includes(c); };
   const d = { tufts: [], hangs: [], banners: [], statics: [], drips: [], lights: [], flies: null };
   for (let y = 1; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
     if (g[y][x] !== '#') continue;

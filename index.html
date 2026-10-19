@@ -180,7 +180,7 @@ canvas{display:block;width:100%;height:100%}
 <script>
 (() => {
 'use strict';
-const WORLD_DATA = [{"key":"aldea-quemada","name":"Aldea quemada","theme":"aldea","x":0,"y":0,"rows":["##############################","#............................#","#............................#","#............................#","#............................#","#............................#","#..............####..........#","#............................#","#............................#","#.........####...............#","#............................#","#............................#","#.............####............","#.............................","#..p.....S....................","##############################","##############################"]},{"key":"bosque-de-bambu","name":"Bosque de bambú","theme":"bambu","x":480,"y":0,"rows":["##############################","#............................#","#............................#","#............................#","#..............f.............#","#............................#","#......####..........####....#","#............................#","#............................#","#............######..........#","#............................#","#............................#","..............................","..............................","....e.................e.......","##############...#############","##############...#############"]},{"key":"muralla-del-castillo","name":"Muralla del castillo","theme":"castillo","x":960,"y":0,"rows":["##############################","#............................#","#.............................","#.............................","#.............................","#.......................######","#.......................######","#..............#####....######","#.......................######","#.......................######","#.......................######","#.......#####...........######","........................######","........................######","..........e.............######","##############################","##############################"]},{"key":"torre-del-vigia","name":"Torre del vigía","theme":"castillo","x":1440,"y":0,"rows":["##############################","#............................#",".............................#","....................f........#",".............................#","####.........................#","#............................#","#............................#","#....#####...................#","#............................#","#............................#","#...........#####............#","#............................#","#............................#","#....S................H......#","##############################","##############################"]},{"key":"cueva-del-pozo","name":"Cueva del pozo","theme":"cueva","x":480,"y":272,"rows":["##############...#############","#............................#","#............................#","#...........#####............#","#............................#","#............................#","#............................#","#................#####.......#","#............................#","#.......f....................#","#............................#","#.....................########","#............................B","#............................B","#..D......e.........e........B","##############################","##############################"]},{"key":"santuario-del-maestro","name":"Santuario del maestro","theme":"templo","x":960,"y":272,"rows":["##############################","####################.........#","####################.........#","####################.........#","####################.........#","####################.........#","####################.........#","####################.........#","#.......############.........#","#.......############.........#","#.......############.........#","#.......############.........#",".............................#",".............................#","...S....^^^^^^^.........R....#","##############################","##############################"]}];
+const WORLD_DATA = [{"key":"desvan-oculto","name":"Desván oculto","zone":"Aldea quemada","theme":"aldea","x":-864,"y":-544,"rows":["########################","#......................#","#......................#","#.......................","#.......................","#.......................","#................#######","#......................#","#.........####.........#","#......................#","#...M..................#","########################","########################"]},{"key":"campanario","name":"Campanario","zone":"Aldea quemada","theme":"aldea","x":-480,"y":-544,"rows":["##############################","#............................#","#............................#","X.................f...........","X.............................","X.............................","##########....################","#............................#","#............................#","#.........####...............#","#............................#","#............................#","#...................f........#","#..............####..........#","#............................#","#............................#","#............................#","#...................#####....#","#............................#","#............................#","#.......f....................#","#...........####.............#","#............................#","#............................#","#............................#","#...#####....................#","#............................#","#............................#","#............................#","#...........#####............#","#............................#","#............................#","#............................#","#######################....###"]},{"key":"tejados","name":"Tejados","zone":"Aldea quemada","theme":"castillo","x":0,"y":-544,"rows":["############################################################","#..........................................................#","#.............................f........................M...#",".....................................................#####.#","...........................................................#","..........................########.........................#","#########.................########.........................#","#########........e........########................##########","#########....##########...########........e.......##########","#########....##########...########....#########...##########","#########....##########...########....#########...##########","#########....##########...########....#########...##########","#########....##########...########....#########...##########","#########....##########...########....#########...##########","#########....##########...########....#########...##########","#########^^^^##########^^^########^^^^#########^^^##########","############################################################"]},{"key":"camino-del-exilio","name":"Camino del exilio","zone":"Aldea quemada","theme":"aldea","x":-1920,"y":0,"rows":["############################################################","#......................###..........................########","#......................###..........................XX....##","#......................###..........................XX....##","#.......................................f...........XX..M.##","#.................................................##########","#............................................###..##########","#..........................................................#","#..........................................................#","#.....................................#####................#","#..........................................................#","#..........................................................#","#.............................#####.........................","#.........##................................###.............","#..p......##...............e................###.............","##################^^^#######################################","############################################################"]},{"key":"plaza-del-mercado","name":"Plaza del mercado","zone":"Aldea quemada","theme":"aldea","x":-960,"y":0,"rows":["##############################","#............................#","#............................#","#............................#","#............................#","#............................#","#................###.....f...#","#............................#","#............................#","#..........#####.............#","#............................#","#............................#","...####.......................","..............................","........S.....................","####################...#######","####################...#######"]},{"key":"calle-de-los-artesanos","name":"Calle de los artesanos","zone":"Aldea quemada","theme":"aldea","x":-480,"y":0,"rows":["#######################....###","#............................#","#............................#","#............................#","#.........................####","#............................#","#............................#","#......................###...#","#............................#","#...####.....................#","#................####........#","#............................#","..............................","..............................","........e.....e...............","##############################","##############################"]},{"key":"aldea-quemada","name":"Puente del río","zone":"Aldea quemada","theme":"aldea","x":0,"y":0,"rows":["##############################","#............................#","#............................#","#............................#","#............................#","#............................#","#..............####..........#","#............................#","#............................#","#.........####...............#","#............................#","#............................#","..............####............","..............................",".........S..........e.........","#........#####################","####GGG#######################"]},{"key":"bosque-de-bambu","name":"Bosque de bambú","zone":"Bosque de bambú","theme":"bambu","x":480,"y":0,"rows":["##############################","#............................#","#............................#","#............................#","#..............f.............#","#............................#","#......####..........####....#","#............................#","#............................#","#............######..........#","#............................#","#............................#","..............................","..............................","....e.................e.......","##############...#############","##############...#############"]},{"key":"muralla-del-castillo","name":"Muralla del castillo","zone":"Muralla del castillo","theme":"castillo","x":960,"y":0,"rows":["##############################","#............................#","#.............................","#.............................","#.............................","#.......................######","#.......................######","#..............#####....######","#.......................######","#.......................######","#.......................######","#.......#####...........######","........................######","........................######","..........e.............######","##############################","##############################"]},{"key":"torre-del-vigia","name":"Torre del vigía","zone":"Muralla del castillo","theme":"castillo","x":1440,"y":0,"rows":["##############################","#............................#",".............................#","....................f........#",".............................#","####.........................#","#............................#","#............................#","#....#####...................#","#............................#","#............................#","#...........#####............#","#............................#","#............................#","#....S................H......#","##############################","##############################"]},{"key":"pozo-seco","name":"Pozo seco","zone":"Aldea quemada","theme":"cueva","x":-960,"y":272,"rows":["####################...#######","################.........#####","################.........#####","################.........#####","################.........#####","################.........#####","################.........#####","################.........#####","###################......#####","################.........#####","################.........#####","################.........#####","################.........#####","################......########","################.........#####","################.........#####","################.........#####","################.........#####","################.........#####","################.........#####","################.........#####","#............................#","#............................#","#............................#","#............................#","#...........f................#","#............................#","#.....................f......#","#............................#","#.............................","#.............................","#....^^^^^....................","##############################","##############################"]},{"key":"molino-de-agua","name":"Molino de agua","zone":"Aldea quemada","theme":"cueva","x":0,"y":272,"rows":["####...#######################","#...##.......................#","#.......L....................#","#....####....................#","#............................#","#............................#","#........####................#","#............................#","#............................#","#...####..............f......#","#............................#","#............................#","#.........####...............B","#............................B","#............................B","#...............##############","#............................#","#........#####...............#","#............................#","#............................#","#.............#####..........#","#............................#","#............................#","#...................#####....#","#............................#","#............................#","#.............#####..........#","#............................#","#............................#","........#####................#",".............................#","...............e.............#","##############################","##############################"]},{"key":"cueva-del-pozo","name":"Cueva del pozo","zone":"Cueva del pozo","theme":"cueva","x":480,"y":272,"rows":["##############...#############","#............................#","#............................#","#...........#####............#","#............................#","#............................#","#............................#","#................#####.......#","#............................#","#.......f....................#","#............................#","#.....................########",".............................B",".............................B","...D......e.........e........B","##############################","##############################"]},{"key":"santuario-del-maestro","name":"Santuario del maestro","zone":"Santuario del maestro","theme":"templo","x":960,"y":272,"rows":["##############################","####################.........#","####################.........#","####################.........#","####################.........#","####################.........#","####################.........#","####################.........#","#.......############.........#","#.......############.........#","#.......############.........#","#.......############.........#",".............................#",".............................#","...S....^^^^^^^.........R....#","##############################","##############################"]},{"key":"bodegas-de-sake","name":"Bodegas de sake","zone":"Aldea quemada","theme":"cueva","x":-480,"y":544,"rows":["##############################","#............................#","#............................#","#............................#","#...............f............#","#............................#","#............................#","#................M...........#","#..............####..........#","#............................#","#............................#","#........####................#","..............................",".....##................##.....",".....##....e.......e...##.....","##############################","##############################"]}];
 // ===== 00-config.js =====
 /* ---------- Constantes ---------- */
 const TILE = 16;
@@ -229,6 +229,9 @@ const TH = {
   p  inicio        S  linterna de piedra (guardado)
   D  salto de grulla   H  impulso iai   R  la espada del maestro
   e  ashigaru      f  onibi (fuego fatuo)
+  X  pared agrietada (se rompe a tajos: secretos)
+  G  portón (se abre con una palanca cercana)   L  palanca
+  M  fragmento de máscara (4 = una máscara más)
 */
 // Claves de la versión anterior (partidas guardadas v1) → nombres de sala actuales
 const OLD_KEYS = {"0,0": "aldea-quemada", "1,0": "bosque-de-bambu", "2,0": "muralla-del-castillo", "3,0": "torre-del-vigia", "1,1": "cueva-del-pozo", "2,1": "santuario-del-maestro"};
@@ -246,7 +249,8 @@ const hash = (x, y) => { let h = x * 374761393 + y * 668265263; h = (h ^ (h >> 1
 let prefs = { sound: true };
 try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || '{}')); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} };
-const defaultSave = () => ({ abilities: { double: false, dash: false }, got: [], broken: [], visited: [], shrine: null, time: 0, deaths: 0, done: false });
+const defaultSave = () => ({ abilities: { double: false, dash: false }, got: [], broken: [], visited: [], levers: [], frags: 0, shrine: null, time: 0, deaths: 0, done: false });
+const maxHpFor = s => 5 + Math.floor((s.frags || 0) / 4);
 let slot = 1;
 const slotKey = n => SAVE_KEY + '-' + n;
 function readSave(n = slot) { try { const s = localStorage.getItem(slotKey(n)); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
@@ -268,7 +272,7 @@ function migrateOldSave() {
 let save = defaultSave();
 let rooms = {}, cur = null;
 let state = 'title';
-let enemies = [], pickups = [], shrines = [], particles = [], amb = [];
+let enemies = [], pickups = [], shrines = [], levers = [], particles = [], amb = [], lastZone = null;
 let banner = null, roomLabel = null, fade = 0, shake = 0, respawnT = 0, respawnKind = null, hitstop = 0, clock = 0;
 const p = { x: 0, y: 0, w: 10, h: 14, vx: 0, vy: 0, face: 1, onGround: false, coyote: 0, jumpBuf: 0, jumpHeld: false,
   airJumps: 1, canDash: true, dashT: 0, dashCD: 0, dashHit: new Set(), atkT: 0, atkCD: 0, hitSet: new Set(), inv: 0, knockT: 0,
@@ -286,25 +290,49 @@ function buildRooms() {
     const nr = grid.length, nc = grid[0].length, ents = [];
     for (let y = 0; y < nr; y++) for (let x = 0; x < nc; x++) {
       const ch = grid[y][x];
-      if ('pSDHRef'.includes(ch)) { ents.push({ t: ch, x, y }); grid[y][x] = '.'; }
+      if ('pSDHRefLM'.includes(ch)) { ents.push({ t: ch, x, y }); grid[y][x] = '.'; }
     }
-    rooms[d.key] = { key: d.key, name: d.name, theme: d.theme, x: d.x, y: d.y, nc, nr, w: nc * TILE, h: nr * TILE, grid, ents, art: null,
+    rooms[d.key] = { key: d.key, name: d.name, zone: d.zone || d.name, theme: d.theme, x: d.x, y: d.y, nc, nr, w: nc * TILE, h: nr * TILE, grid, ents, art: null,
       seed: Math.round(d.x / 480 * 7919 + d.y / 272 * 104729) + 13 };
   }
   for (const b of save.broken) {
     const [rk, pos] = b.split(':'); const [x, y] = pos.split(',').map(Number);
     if (rooms[rk]) rooms[rk].grid[y][x] = '.';
   }
+  for (const k in rooms) computePocket(rooms[k]);
 }
 function invalidateArt() { for (const k in rooms) rooms[k].art = null; }
+// Recovecos secretos: celdas libres a las que solo se llega rompiendo una pared agrietada.
+// Se dibujan tapadas con roca hasta que se descubren (como en Hollow Knight).
+function computePocket(r) {
+  r.pocket = null;
+  if (!r.grid.some(row => row.includes('X'))) return;
+  const free = (x, y) => x >= 0 && y >= 0 && x < r.nc && y < r.nr && !'#BXG'.includes(r.grid[y][x]);
+  const seen = new Set(), todo = [];
+  const seed = (x, y) => { if (free(x, y) && !seen.has(x + ',' + y)) { seen.add(x + ',' + y); todo.push([x, y]); } };
+  for (let x = 0; x < r.nc; x++) { seed(x, 0); seed(x, r.nr - 1); }
+  for (let y = 0; y < r.nr; y++) { seed(0, y); seed(r.nc - 1, y); }
+  for (const e of r.ents) if (e.t !== 'M') seed(e.x, e.y);
+  while (todo.length) { const [x, y] = todo.pop(); seed(x + 1, y); seed(x - 1, y); seed(x, y + 1); seed(x, y - 1); }
+  const pocket = new Set();
+  for (let y = 0; y < r.nr; y++) for (let x = 0; x < r.nc; x++) if (free(x, y) && !seen.has(x + ',' + y)) pocket.add(x + ',' + y);
+  if (pocket.size) r.pocket = pocket;
+}
+const inPocket = (r, x, y) => r.pocket && r.pocket.has(Math.floor(x / TILE) + ',' + Math.floor(y / TILE));
 function setRoomDims(r) { COLS = r.nc; ROWS = r.nr; W = r.w; H = r.h; }
 function roomAt(wx, wy) {
   for (const k in rooms) { const r = rooms[k]; if (wx >= r.x && wx < r.x + r.w && wy >= r.y && wy < r.y + r.h) return r; }
   return null;
 }
 
-const tileAt = (tx, ty) => (tx < 0 || tx >= COLS || ty < 0 || ty >= ROWS) ? '.' : cur.grid[ty][tx];
-const isSolid = (tx, ty) => { const c = tileAt(tx, ty); return c === '#' || c === 'B'; };
+// Fuera de la sala se consulta la sala vecina: las colisiones son continuas entre salas
+function tileAt(tx, ty) {
+  if (tx >= 0 && tx < COLS && ty >= 0 && ty < ROWS) return cur.grid[ty][tx];
+  const wx = cur.x + tx * TILE + 8, wy = cur.y + ty * TILE + 8, r = roomAt(wx, wy);
+  return r ? r.grid[Math.floor((wy - r.y) / TILE)][Math.floor((wx - r.x) / TILE)] : '.';
+}
+const SOLID = '#BXG';
+const isSolid = (tx, ty) => SOLID.includes(tileAt(tx, ty));
 
 // ===== 03-rooms.js =====
 /* ---------- Sala y entidades ---------- */
@@ -312,7 +340,7 @@ function enterRoom(key) {
   if (cur && cur.key !== key) cur.art = null;   // liberar memoria del arte de la sala anterior
   cur = rooms[key];
   setRoomDims(cur); computeScale();
-  enemies = []; pickups = []; shrines = []; amb = []; splats = []; corpses = []; strokes = []; rain = [];
+  enemies = []; pickups = []; shrines = []; levers = []; amb = []; splats = []; corpses = []; strokes = []; rain = [];
   if (!cur.deco) cur.deco = buildDeco(cur);
   for (const tf of cur.deco.tufts) { tf.cut = false; tf.b = 0; }
   for (const hg of cur.deco.hangs) { hg.ang = (Math.random() - .5) * .2; hg.angV = 0; }
@@ -321,9 +349,11 @@ function enterRoom(key) {
     if (e.t === 'e') enemies.push({ kind: 'ashi', x: e.x * TILE + 2, y: e.y * TILE + 2, w: 12, h: 14, vx: 0, vy: 0, dir: Math.random() < 0.5 ? -1 : 1, speed: 28, hp: 2, hurt: 0, kbT: 0, kb: 0, alive: true, onGround: false, anim: Math.random() * 3, st: 'walk', stT: 0, cd: 0 });
     else if (e.t === 'f') enemies.push({ kind: 'oni', x: e.x * TILE + 3, y: e.y * TILE + 3, baseY: e.y * TILE + 3, w: 10, h: 10, dir: Math.random() < 0.5 ? -1 : 1, speed: 34, hp: 1, hurt: 0, alive: true, anim: Math.random() * 6 });
     else if (e.t === 'S') shrines.push({ tx: e.x, ty: e.y, box: { x: e.x * TILE + 1, y: e.y * TILE - 2, w: 14, h: 18 } });
-    else if ('DHR'.includes(e.t) && !save.got.includes(id)) pickups.push({ t: e.t, id, x: e.x * TILE + 2, y: e.y * TILE + 1, w: 12, h: 12, bob: Math.random() * 6 });
+    else if (e.t === 'L') levers.push({ id, x: e.x * TILE + 3, y: e.y * TILE, w: 10, h: 16, on: save.levers.includes(id), swing: 0 });
+    else if ('DHRM'.includes(e.t) && !save.got.includes(id)) pickups.push({ t: e.t, id, x: e.x * TILE + 2, y: e.y * TILE + 1, w: 12, h: 12, bob: Math.random() * 6 });
   }
-  if (!save.visited.includes(key)) { save.visited.push(key); roomLabel = { text: cur.name, theme: cur.theme, t: 3.4, max: 3.4 }; }
+  if (!save.visited.includes(key)) save.visited.push(key);
+  if (cur.zone !== lastZone) { lastZone = cur.zone; roomLabel = { text: cur.zone, theme: cur.theme, t: 3.4, max: 3.4 }; }
   amb = []; ambSeeded = false;
   p.lastSafe = { x: p.x, y: p.y };
 }
@@ -338,8 +368,8 @@ function spawnAtShrine() {
 }
 
 function setupWorld(fresh) {
-  save = fresh ? defaultSave() : (readSave() || defaultSave());
-  buildRooms();
+  save = Object.assign(defaultSave(), fresh ? {} : (readSave() || {}));
+  buildRooms(); lastZone = null; p.maxHp = maxHpFor(save);
   if (!save.shrine) setupStart(); else spawnAtShrine();
   particles = []; banner = null; fade = 1;
   updatePadLocks();
@@ -452,7 +482,7 @@ function updateAmb(dt) {
 function buildDeco(room) {
   const r = seeded(room.seed + 777), T = TH[room.theme], g = room.grid;
   const at = (x, y) => (x < 0 || x >= COLS || y < 0 || y >= ROWS) ? '#' : g[y][x];
-  const isOpen = (x, y) => { const c = at(x, y); return c !== '#' && c !== 'B'; };
+  const isOpen = (x, y) => { const c = at(x, y); return !'#BXG'.includes(c); };
   const d = { tufts: [], hangs: [], banners: [], statics: [], drips: [], lights: [], flies: null };
   for (let y = 1; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
     if (g[y][x] !== '#') continue;
@@ -559,7 +589,7 @@ function ensureAudio() {
   if (actx.state === 'suspended') actx.resume();
 }
 const SFX = { jump: [520, 780, .08, 'square'], dbl: [660, 1180, .12, 'triangle'], dash: [1400, 220, .14, 'sawtooth'], hit: [260, 70, .12, 'square'],
-  hurt: [180, 50, .3, 'sawtooth'], pogo: [300, 900, .1, 'triangle'], ui: [660, 880, .06, 'triangle'], pick: [523, 1568, .5, 'triangle'], save: [392, 784, .45, 'triangle'], slash: [1800, 500, .07, 'sawtooth'],
+  hurt: [180, 50, .3, 'sawtooth'], pogo: [300, 900, .1, 'triangle'], ui: [660, 880, .06, 'triangle'], secret: [330, 1320, .6, 'triangle'], lever: [140, 70, .25, 'square'], pick: [523, 1568, .5, 'triangle'], save: [392, 784, .45, 'triangle'], slash: [1800, 500, .07, 'sawtooth'],
   break: [160, 50, .25, 'square'], kill: [420, 90, .22, 'square'], lunge: [220, 330, .2, 'square'] };
 function sfx(name) {
   if (!prefs.sound || !actx) return;
@@ -683,6 +713,51 @@ function addSplat(x, y, c, r) {
   for (let i = 0; i < n; i++) pts.push(r * (.6 + Math.random() * .6));
   splats.push({ x, y, c, r, pts, rot: Math.random() * 6, t: 14 });
 }
+// Paredes agrietadas: dos tajos rompen todo el bloque conectado
+function hitWalls(hb) {
+  if (p.hitSet.has('wall')) return;
+  for (let ty = Math.floor(hb.y / TILE); ty <= Math.floor((hb.y + hb.h) / TILE); ty++)
+    for (let tx = Math.floor(hb.x / TILE); tx <= Math.floor((hb.x + hb.w) / TILE); tx++) {
+      if (tx < 0 || ty < 0 || tx >= COLS || ty >= ROWS || cur.grid[ty][tx] !== 'X') continue;
+      p.hitSet.add('wall'); hitstop = 0.05; shake = Math.max(shake, 0.12); sfx('hit');
+      for (let i = 0; i < 8; i++) particles.push({ x: tx * TILE + 8, y: ty * TILE + 8, vx: (Math.random() - .5) * 140, vy: -40 - Math.random() * 90, life: .6, max: .6, c: TH[cur.theme].rockHi, s: 1.1, g: 600 });
+      cur.cracks = cur.cracks || {};
+      const k = tx + ',' + ty; cur.cracks[k] = (cur.cracks[k] || 0) + 1;
+      if (cur.cracks[k] >= 2) breakWallGroup(tx, ty);
+      return;
+    }
+}
+function breakWallGroup(sx, sy) {
+  const todo = [[sx, sy]];
+  while (todo.length) {
+    const [x, y] = todo.pop();
+    if (x < 0 || y < 0 || x >= COLS || y >= ROWS || cur.grid[y][x] !== 'X') continue;
+    cur.grid[y][x] = '.'; save.broken.push(cur.key + ':' + x + ',' + y);
+    for (let i = 0; i < 5; i++) particles.push({ x: x * TILE + Math.random() * 16, y: y * TILE + Math.random() * 16, vx: (Math.random() - .5) * 120, vy: -30 - Math.random() * 80, life: .8, max: .8, c: i % 2 ? TH[cur.theme].rock : TH[cur.theme].edge, s: 1.4, g: 650 });
+    todo.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+  if (cur.art) cur.art.terrain = null;
+  cur.deco = buildDeco(cur);
+  cur.oldPocket = cur.pocket; cur.reveal = 1; computePocket(cur);
+  shake = 0.3; sfx('secret'); writeSave();
+}
+// Palanca: abre los portones que estén cerca en el mundo (también en salas vecinas)
+function pullLever(lv) {
+  lv.on = true; lv.swing = 1; save.levers.push(lv.id); sfx('lever'); shake = 0.25; hitstop = 0.06;
+  const lx = cur.x + lv.x + 5, ly = cur.y + lv.y + 8;
+  let opened = 0;
+  for (const k in rooms) {
+    const r = rooms[k];
+    for (let y = 0; y < r.nr; y++) for (let x = 0; x < r.nc; x++) {
+      if (r.grid[y][x] !== 'G' || Math.hypot(r.x + x * TILE + 8 - lx, r.y + y * TILE + 8 - ly) > 200) continue;
+      r.grid[y][x] = '.'; save.broken.push(k + ':' + x + ',' + y); opened++;
+      if (r === cur) for (let i = 0; i < 4; i++) particles.push({ x: x * TILE + Math.random() * 16, y: y * TILE + 8, vx: (Math.random() - .5) * 80, vy: -40 - Math.random() * 60, life: .7, max: .7, c: '#6a4a2c', s: 1.2, g: 600 });
+    }
+    if (r.art) r.art.terrain = null;
+  }
+  if (opened) showBanner('開', 'Se abrió un portón', 'Quedó libre un atajo.', 2.6);
+  writeSave();
+}
 function damageEnemy(e, dir, aim) {
   e.hp--; e.hurt = 0.2; hitstop = 0.06; sfx('hit');
   if (e.kind === 'ashi') { e.kbT = 0.15; e.kb = dir * 150; e.vy = aim === 'up' ? -230 : aim === 'down' ? 60 : -140; e.dir = -dir; e.st = 'walk'; e.cd = 0.8; }
@@ -756,6 +831,8 @@ function combat() {
             break;
           }
     }
+    hitWalls(hb);
+    for (const lv of levers) if (!lv.on && !p.hitSet.has(lv) && overlap(hb, lv)) { p.hitSet.add(lv); pullLever(lv); }
     const deco = cur.deco;   // pasto que se corta, faroles que se golpean
     for (const tf of deco.tufts) if (!tf.cut && overlap(hb, { x: tf.x - 3, y: tf.y - 6, w: 6, h: 6 })) {
       tf.cut = true;
@@ -814,6 +891,11 @@ function interactions() {
     } else if (k.t === 'H') {
       save.abilities.dash = true; sfx('pick'); updatePadLocks();
       showBanner('居', 'Impulso iai', (touch ? 'Tocá Impulso para desenvainar y lanzarte.' : 'Pulsá C o Shift para desenvainar y lanzarte.') + ' Corta enemigos y barricadas de bambú.', 4.8);
+    } else if (k.t === 'M') {
+      save.frags = (save.frags || 0) + 1; sfx('pick');
+      const n = save.frags % 4;
+      if (n === 0) { p.maxHp = maxHpFor(save); p.hp = p.maxHp; showBanner('面', 'Máscara completa', 'Tu vida máxima aumentó en una máscara.', 3.6); }
+      else showBanner('面', 'Fragmento de máscara', `${n} de 4. Juntá cuatro para tener una máscara más.`, 3.2);
     } else if (k.t === 'R') { sfx('pick'); win(); }
     writeSave();
   }
@@ -1115,10 +1197,10 @@ function buildTerrain(room) {
   g.scale(S, S);
   const rnd = seeded(room.seed + 99);
   const at = (x, y) => (x < 0 || x >= COLS || y < 0 || y >= ROWS) ? '#' : room.grid[y][x];
-  const sol = (x, y) => at(x, y) === '#';
-  const open = (x, y) => { const ch = at(x, y); return ch !== '#' && ch !== 'B'; };
+  const sol = (x, y) => '#X'.includes(at(x, y));
+  const open = (x, y) => !'#BX'.includes(at(x, y));
   const cells = [];
-  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (room.grid[y][x] === '#') cells.push([x, y]);
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if ('#X'.includes(room.grid[y][x])) cells.push([x, y]);
 
   // 1. masa base
   g.fillStyle = T.rock;
@@ -1192,6 +1274,8 @@ function buildTerrain(room) {
   for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
     const ch = room.grid[y][x];
     if (ch === 'B') barricade(g, x * TILE, y * TILE, at(x, y - 1) !== 'B', at(x, y + 1) !== 'B', rnd);
+    else if (ch === 'X') cracks(g, x * TILE, y * TILE, rnd);
+    else if (ch === 'G') gate(g, x * TILE, y * TILE, at(x - 1, y) === 'G' || at(x + 1, y) === 'G');
     else if (ch === '^') stakes(g, x * TILE, y * TILE, rnd);
   }
   // 7. decorados fijos de cada zona
@@ -1319,6 +1403,28 @@ function sideEdge(g, T, X, Y, d, rnd) {
   g.fillStyle = T.rock;
   for (let i = 0; i < 2; i++) { if (rnd() < .5) { const r = .7 + rnd() * 1.1; circle(g, X + d * r * .25, Y + 2 + rnd() * 12, r); } }
 }
+// Pared agrietada: casi igual a la roca, con grietas finas como pista
+function cracks(g, X, Y, rnd) {
+  g.save(); g.beginPath(); g.rect(X, Y, TILE, TILE); g.clip();
+  g.lineCap = 'round';
+  for (let k = 0; k < 2; k++) {
+    let x = X + 3 + rnd() * 10, y = Y;
+    g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = .55; g.beginPath(); g.moveTo(x, y);
+    for (let i = 0; i < 5; i++) { x += (rnd() - .5) * 6; y += 3 + rnd() * 1.5; g.lineTo(x, y); }
+    g.stroke();
+    g.strokeStyle = 'rgba(255,240,220,.1)'; g.lineWidth = .3; g.stroke();
+  }
+  g.restore();
+}
+// Portón de madera con herrajes (horizontal si está en un piso)
+function gate(g, X, Y, horiz) {
+  g.fillStyle = '#2a1a10'; g.fillRect(X, Y, TILE, TILE);
+  g.fillStyle = '#5a3c22';
+  for (let k = 0; k < 4; k++) { if (horiz) g.fillRect(X, Y + 1 + k * 3.8, TILE, 3); else g.fillRect(X + 1 + k * 3.8, Y, 3, TILE); }
+  g.fillStyle = '#1a1a22'; if (horiz) { g.fillRect(X + 3, Y, 1.6, TILE); g.fillRect(X + 11.4, Y, 1.6, TILE); } else { g.fillRect(X, Y + 3, TILE, 1.6); g.fillRect(X, Y + 11.4, TILE, 1.6); }
+  g.fillStyle = '#8a8070'; for (const [a, b] of [[3.8, 3.8], [12.2, 3.8], [3.8, 12.2], [12.2, 12.2]]) circle(g, X + a, Y + b, .55);
+  g.strokeStyle = 'rgba(3,2,8,.8)'; g.lineWidth = .5; g.strokeRect(X + .25, Y + .25, TILE - .5, TILE - .5);
+}
 function barricade(g, X, Y, isTop, isBottom, rnd) {
   g.fillStyle = '#0d0907'; g.fillRect(X + 1, Y, 14, TILE);
   for (let k = 0; k < 3; k++) {
@@ -1380,7 +1486,7 @@ function drawToro(g, x, y, lit, t) {
   g.fillStyle = st; g.fillRect(-1.1, -21.2, 2.2, 1.7); circle(g, 0, -21.8, 1.1);
   g.restore();
 }
-const PK = { D: { k: '鶴', c: C.washi, rgb: '239,230,210' }, H: { k: '居', c: C.shu, rgb: '230,90,60' }, R: { k: '刀', c: C.kin, rgb: '230,180,80' } };
+const PK = { M: { k: '面', c: C.washi, rgb: '239,230,210' }, D: { k: '鶴', c: C.washi, rgb: '239,230,210' }, H: { k: '居', c: C.shu, rgb: '230,90,60' }, R: { k: '刀', c: C.kin, rgb: '230,180,80' } };
 function drawPickup(g, k, t) {
   const P = PK[k.t], x = k.x + 6, y = k.y + 6 + Math.sin(t * 2.2 + k.bob) * 2;
   g.save(); g.globalCompositeOperation = 'lighter';
@@ -1389,10 +1495,30 @@ function drawPickup(g, k, t) {
   softGlow(g, x, y, 22, P.rgb, .5);
   g.strokeStyle = rgba(P.rgb, .5 - ((t * .8) % 1) * .5); g.lineWidth = .6; g.beginPath(); g.arc(x, y, 6 + ((t * .8) % 1) * 12, 0, TAU); g.stroke();
   g.restore();
+  if (k.t === 'M') {   // fragmento de máscara: un cuarto de máscara blanca con borde roto
+    g.save(); g.translate(x, y); g.rotate(Math.sin(t * 1.6 + k.bob) * .15);
+    g.fillStyle = '#f2ead8'; g.beginPath(); g.moveTo(0, 8); g.bezierCurveTo(-6.5, 4, -7, -5, 0, -7.5);
+    g.lineTo(1.2, -4); g.lineTo(-.6, -1); g.lineTo(1.6, 2); g.lineTo(0, 8); g.fill();
+    g.fillStyle = '#16182b'; ellipse(g, -2.6, -.6, 1.5, 2.2, .35);
+    g.strokeStyle = 'rgba(3,2,8,.8)'; g.lineWidth = .4; g.stroke();
+    g.restore(); return;
+  }
   g.fillStyle = '#3a2418'; g.fillRect(x - 6.5, y - 8, 13, 2); g.fillRect(x - 6.5, y + 6, 13, 2);
   g.fillStyle = '#efe4c8'; g.fillRect(x - 5, y - 6.2, 10, 12.4);
   g.fillStyle = C.kin; circle(g, x - 6.7, y - 7, .9); circle(g, x + 6.7, y - 7, .9); circle(g, x - 6.7, y + 7, .9); circle(g, x + 6.7, y + 7, .9);
   g.fillStyle = k.t === 'D' ? C.ink : P.c; g.font = `700 8px ${SERIF}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(P.k, x, y + .4);
+}
+function drawLever(g, lv, t) {
+  const x = lv.x + 5, y = lv.y + 16;
+  lv.swing = Math.max(0, lv.swing - 1 / 40);
+  g.fillStyle = '#3a2a1c'; g.fillRect(x - 4, y - 3, 8, 3);
+  g.fillStyle = '#2a1d14'; g.fillRect(x - 2.5, y - 6, 5, 3.5);
+  const a = (lv.on ? .7 : -.7) + Math.sin(lv.swing * 14) * lv.swing * .3;
+  g.save(); g.translate(x, y - 5); g.rotate(a);
+  g.strokeStyle = '#6a4a2c'; g.lineWidth = 1.3; g.lineCap = 'round'; g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -10); g.stroke();
+  g.fillStyle = lv.on ? '#8a8070' : C.shu; circle(g, 0, -10.5, 1.6);
+  g.restore();
+  if (!lv.on) { g.save(); g.globalCompositeOperation = 'lighter'; softGlow(g, x, y - 14, 10, '230,90,60', .25 + Math.sin(t * 3) * .1); g.restore(); }
 }
 function drawAshigaru(g, e, t, mono) {
   const flash = !!mono || (e.hurt > 0 && Math.floor(t * 30) % 2 === 0), FL = mono || '#fff';
@@ -1628,6 +1754,16 @@ function drawAmb(g) {
 // ===== 24-scenery.js =====
 /* ---------- Escenario vivo y tinta ---------- */
 const inView = (x, m = 30) => x > cam.x - m && x < cam.x + VW + m;
+function drawPocketCover(g) {
+  const T = TH[cur.theme];
+  const paint = (set, a) => {
+    g.globalAlpha = a; g.fillStyle = T.rock; g.beginPath();
+    for (const k of set) { const [x, y] = k.split(',').map(Number); g.rect(x * TILE - .5, y * TILE - .5, TILE + 1, TILE + 1); }
+    g.fill(); g.globalAlpha = 1;
+  };
+  if (cur.pocket) paint(cur.pocket, 1);
+  if (cur.reveal > 0 && cur.oldPocket) { paint(cur.oldPocket, cur.reveal); cur.reveal = Math.max(0, cur.reveal - 1 / 50); if (!cur.reveal) cur.oldPocket = null; }
+}
 function drawSplats(g) {
   for (const sp of splats) {
     if (!inView(sp.x)) continue;
@@ -1739,7 +1875,7 @@ function drawLighting(t, sx, sy) {
   lg.globalCompositeOperation = 'destination-out';
   lightHole(p.x + 5 - ox, p.y + 7 - oy, 78);
   for (const s of shrines) lightHole(s.tx * TILE + 8 - ox, (s.ty + 1) * TILE - 14 - oy, isLit(s) ? 85 : 30, isLit(s) ? 1 : .5);
-  for (const k of pickups) lightHole(k.x + 6 - ox, k.y + 6 - oy, 55);
+  for (const k of pickups) if (!inPocket(cur, k.x + 6, k.y + 6)) lightHole(k.x + 6 - ox, k.y + 6 - oy, 55);
   for (const e of enemies) if (e.alive && e.kind === 'oni') lightHole(e.x + 5 - ox, e.y + 5 - oy, 48);
   for (const hg of cur.deco.hangs) if (hg.lit) lightHole(hg.x + Math.sin(hg.ang) * hg.len - ox, hg.y + hg.len - oy, 58);
   for (const l of cur.deco.lights) lightHole(l.x - ox, l.y - oy, l.r);
@@ -1796,6 +1932,12 @@ function drawHUD(t) {
   g.fillStyle = '#efe6d2'; g.font = `700 22px ${SERIF}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('浪', ex, ey + 1);
   // máscaras de vida
   for (let i = 0; i < p.maxHp; i++) drawMask(g, 74 + i * 21, 26, i < p.hp, t, i);
+  const fr = (save.frags || 0) % 4;   // fragmentos juntados hacia la próxima máscara
+  if (fr) {
+    const fx = 74 + p.maxHp * 21 + 2, fy = 26;
+    g.strokeStyle = 'rgba(239,230,210,.4)'; g.lineWidth = 1; g.beginPath(); g.arc(fx, fy, 6, 0, TAU); g.stroke();
+    g.fillStyle = 'rgba(242,234,216,.9)'; g.beginPath(); g.moveTo(fx, fy); g.arc(fx, fy, 6, -Math.PI / 2, -Math.PI / 2 + TAU * fr / 4); g.closePath(); g.fill();
+  }
   // habilidades
   const ab = [[save.abilities.double, '鶴'], [save.abilities.dash, '居']];
   let ax = 70;
@@ -1918,7 +2060,8 @@ function render(t) {
   drawSplats(ctx);
   drawBanners(ctx, t);
   for (const s of shrines) drawToro(ctx, s.tx * TILE + 8, (s.ty + 1) * TILE, isLit(s), t);
-  for (const k of pickups) drawPickup(ctx, k, t);
+  for (const k of pickups) if (!inPocket(cur, k.x + 6, k.y + 6)) drawPickup(ctx, k, t);
+  for (const lv of levers) drawLever(ctx, lv, t);
   for (const e of enemies) if (e.alive) { if (e.kind === 'ashi') drawAshigaru(ctx, e, t); else drawOnibi(ctx, e, t); }
   drawCorpses(ctx, t);
   drawGhosts(ctx);
@@ -1929,6 +2072,7 @@ function render(t) {
   drawParticles(ctx);
   drawStrokes(ctx);
   drawRain(ctx);
+  drawPocketCover(ctx);
 
   drawLighting(t, sx, sy);
 

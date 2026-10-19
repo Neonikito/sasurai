@@ -22,7 +22,7 @@ Estilo visual inspirado en Hollow Knight / Silksong con identidad propia de tint
 | Mapa | M o Tab | Botón Mapa |
 | Pausa | Esc o P | Botón Pausa |
 
-Hay 3 ranuras de partida en la pantalla de inicio. Cada linterna de piedra guarda en la ranura elegida.
+La aventura empieza en la Aldea quemada, una zona de 10 salas con un secreto detrás de una pared agrietada, un pozo sin vuelta, un atajo con palanca y lugares a los que solo se llega más adelante con el doble salto. Hay 3 ranuras de partida en la pantalla de inicio. Cada linterna de piedra guarda en la ranura elegida.
 
 ## Estructura del proyecto
 
@@ -61,9 +61,10 @@ Genera `index.html` y avisa si alguna salida de una sala no lleva a ningún lado
 3. Cada sala tiene dos capas de tiles:
    - **terreno**: terreno, estacas y barricadas.
    - **entidades**: inicio, linternas, habilidades, la espada y enemigos.
-4. Cada sala tiene dos propiedades personalizadas: `nombre` (el que aparece en pantalla) y `tema` (`aldea`, `bambu`, `castillo`, `cueva` o `templo`).
-5. Para una sala nueva: *Archivo → Nuevo mapa* con tiles de 16 × 16 y el tamaño que quieras (una pantalla son unas 22 × 13 tiles; las salas pueden ser mucho más grandes). Usá el tileset `tiles.tsj`, creá las dos capas y las dos propiedades, guardala en `maps/` y arrastrala al mundo.
-6. Las salidas se conectan solas: si el borde de una sala toca a otra en el mundo y hay espacio libre en los dos lados, se puede pasar.
+4. Cada sala tiene tres propiedades personalizadas: `nombre` (el de la sala, se ve en el mapa), `zona` (el título grande que aparece al entrar a una zona nueva) y `tema` (`aldea`, `bambu`, `castillo`, `cueva` o `templo`).
+5. Para una sala nueva: *Archivo → Nuevo mapa* con tiles de 16 × 16 y el tamaño que quieras (una pantalla son unas 22 × 13 tiles; las salas pueden ser mucho más grandes). Usá el tileset `tiles.tsj`, creá las dos capas y las tres propiedades, guardala en `maps/` y arrastrala al mundo.
+6. Las salidas se conectan solas: si el borde de una sala toca a otra en el mundo y hay espacio libre en los dos lados, se puede pasar. Las colisiones son continuas entre salas, así que también funcionan las conexiones verticales.
+   Un salto normal sube 3 tiles; con el doble salto, unos 6.
 7. Corré `node tools/build.mjs` y abrí `index.html`.
 
 | Tile | Qué es |
@@ -76,7 +77,11 @@ Genera `index.html` y avisa si alguna salida de una sala no lleva a ningún lado
 | grulla / iai | Habilidades: doble salto e impulso |
 | espada | La espada del maestro (termina el juego) |
 | ashigaru / onibi | Enemigos |
+| agrietada | Pared que se rompe con dos tajos. Lo que queda detrás aparece tapado hasta romperla |
+| porton | Portón cerrado: lo abre una palanca que esté cerca (también desde la sala vecina) |
+| palanca | Se acciona con un tajo y abre los portones cercanos |
+| fragmento | Fragmento de máscara: cuatro dan una máscara de vida más |
 
 ## Roadmap
 
-El plan completo (progresión, mapas, secretos, habilidades, zonas, enemigos, jefes, omamori, historia, audio y lanzamiento) está en el documento de roadmap del proyecto. Fase actual: **1 · Cimientos**.
+El plan completo (progresión, mapas, secretos, habilidades, zonas, enemigos, jefes, omamori, historia, audio y lanzamiento) está en el documento de roadmap del proyecto. Fase actual: **1 · Cimientos** (hito cumplido: la Aldea quemada tiene 10 salas).

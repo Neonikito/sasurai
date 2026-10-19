@@ -10,7 +10,8 @@ const hash = (x, y) => { let h = x * 374761393 + y * 668265263; h = (h ^ (h >> 1
 let prefs = { sound: true };
 try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || '{}')); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} };
-const defaultSave = () => ({ abilities: { double: false, dash: false }, got: [], broken: [], visited: [], shrine: null, time: 0, deaths: 0, done: false });
+const defaultSave = () => ({ abilities: { double: false, dash: false }, got: [], broken: [], visited: [], levers: [], frags: 0, shrine: null, time: 0, deaths: 0, done: false });
+const maxHpFor = s => 5 + Math.floor((s.frags || 0) / 4);
 let slot = 1;
 const slotKey = n => SAVE_KEY + '-' + n;
 function readSave(n = slot) { try { const s = localStorage.getItem(slotKey(n)); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
@@ -32,7 +33,7 @@ function migrateOldSave() {
 let save = defaultSave();
 let rooms = {}, cur = null;
 let state = 'title';
-let enemies = [], pickups = [], shrines = [], particles = [], amb = [];
+let enemies = [], pickups = [], shrines = [], levers = [], particles = [], amb = [], lastZone = null;
 let banner = null, roomLabel = null, fade = 0, shake = 0, respawnT = 0, respawnKind = null, hitstop = 0, clock = 0;
 const p = { x: 0, y: 0, w: 10, h: 14, vx: 0, vy: 0, face: 1, onGround: false, coyote: 0, jumpBuf: 0, jumpHeld: false,
   airJumps: 1, canDash: true, dashT: 0, dashCD: 0, dashHit: new Set(), atkT: 0, atkCD: 0, hitSet: new Set(), inv: 0, knockT: 0,
@@ -50,22 +51,46 @@ function buildRooms() {
     const nr = grid.length, nc = grid[0].length, ents = [];
     for (let y = 0; y < nr; y++) for (let x = 0; x < nc; x++) {
       const ch = grid[y][x];
-      if ('pSDHRef'.includes(ch)) { ents.push({ t: ch, x, y }); grid[y][x] = '.'; }
+      if ('pSDHRefLM'.includes(ch)) { ents.push({ t: ch, x, y }); grid[y][x] = '.'; }
     }
-    rooms[d.key] = { key: d.key, name: d.name, theme: d.theme, x: d.x, y: d.y, nc, nr, w: nc * TILE, h: nr * TILE, grid, ents, art: null,
+    rooms[d.key] = { key: d.key, name: d.name, zone: d.zone || d.name, theme: d.theme, x: d.x, y: d.y, nc, nr, w: nc * TILE, h: nr * TILE, grid, ents, art: null,
       seed: Math.round(d.x / 480 * 7919 + d.y / 272 * 104729) + 13 };
   }
   for (const b of save.broken) {
     const [rk, pos] = b.split(':'); const [x, y] = pos.split(',').map(Number);
     if (rooms[rk]) rooms[rk].grid[y][x] = '.';
   }
+  for (const k in rooms) computePocket(rooms[k]);
 }
 function invalidateArt() { for (const k in rooms) rooms[k].art = null; }
+// Recovecos secretos: celdas libres a las que solo se llega rompiendo una pared agrietada.
+// Se dibujan tapadas con roca hasta que se descubren (como en Hollow Knight).
+function computePocket(r) {
+  r.pocket = null;
+  if (!r.grid.some(row => row.includes('X'))) return;
+  const free = (x, y) => x >= 0 && y >= 0 && x < r.nc && y < r.nr && !'#BXG'.includes(r.grid[y][x]);
+  const seen = new Set(), todo = [];
+  const seed = (x, y) => { if (free(x, y) && !seen.has(x + ',' + y)) { seen.add(x + ',' + y); todo.push([x, y]); } };
+  for (let x = 0; x < r.nc; x++) { seed(x, 0); seed(x, r.nr - 1); }
+  for (let y = 0; y < r.nr; y++) { seed(0, y); seed(r.nc - 1, y); }
+  for (const e of r.ents) if (e.t !== 'M') seed(e.x, e.y);
+  while (todo.length) { const [x, y] = todo.pop(); seed(x + 1, y); seed(x - 1, y); seed(x, y + 1); seed(x, y - 1); }
+  const pocket = new Set();
+  for (let y = 0; y < r.nr; y++) for (let x = 0; x < r.nc; x++) if (free(x, y) && !seen.has(x + ',' + y)) pocket.add(x + ',' + y);
+  if (pocket.size) r.pocket = pocket;
+}
+const inPocket = (r, x, y) => r.pocket && r.pocket.has(Math.floor(x / TILE) + ',' + Math.floor(y / TILE));
 function setRoomDims(r) { COLS = r.nc; ROWS = r.nr; W = r.w; H = r.h; }
 function roomAt(wx, wy) {
   for (const k in rooms) { const r = rooms[k]; if (wx >= r.x && wx < r.x + r.w && wy >= r.y && wy < r.y + r.h) return r; }
   return null;
 }
 
-const tileAt = (tx, ty) => (tx < 0 || tx >= COLS || ty < 0 || ty >= ROWS) ? '.' : cur.grid[ty][tx];
-const isSolid = (tx, ty) => { const c = tileAt(tx, ty); return c === '#' || c === 'B'; };
+// Fuera de la sala se consulta la sala vecina: las colisiones son continuas entre salas
+function tileAt(tx, ty) {
+  if (tx >= 0 && tx < COLS && ty >= 0 && ty < ROWS) return cur.grid[ty][tx];
+  const wx = cur.x + tx * TILE + 8, wy = cur.y + ty * TILE + 8, r = roomAt(wx, wy);
+  return r ? r.grid[Math.floor((wy - r.y) / TILE)][Math.floor((wx - r.x) / TILE)] : '.';
+}
+const SOLID = '#BXG';
+const isSolid = (tx, ty) => SOLID.includes(tileAt(tx, ty));

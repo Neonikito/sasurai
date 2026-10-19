@@ -32,6 +32,12 @@ function drawHUD(t) {
   g.fillStyle = '#efe6d2'; g.font = `700 22px ${SERIF}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('浪', ex, ey + 1);
   // máscaras de vida
   for (let i = 0; i < p.maxHp; i++) drawMask(g, 74 + i * 21, 26, i < p.hp, t, i);
+  const fr = (save.frags || 0) % 4;   // fragmentos juntados hacia la próxima máscara
+  if (fr) {
+    const fx = 74 + p.maxHp * 21 + 2, fy = 26;
+    g.strokeStyle = 'rgba(239,230,210,.4)'; g.lineWidth = 1; g.beginPath(); g.arc(fx, fy, 6, 0, TAU); g.stroke();
+    g.fillStyle = 'rgba(242,234,216,.9)'; g.beginPath(); g.moveTo(fx, fy); g.arc(fx, fy, 6, -Math.PI / 2, -Math.PI / 2 + TAU * fr / 4); g.closePath(); g.fill();
+  }
   // habilidades
   const ab = [[save.abilities.double, '鶴'], [save.abilities.dash, '居']];
   let ax = 70;

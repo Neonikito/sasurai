@@ -21,7 +21,7 @@ function drawLighting(t, sx, sy) {
   lg.globalCompositeOperation = 'destination-out';
   lightHole(p.x + 5 - ox, p.y + 7 - oy, 78);
   for (const s of shrines) lightHole(s.tx * TILE + 8 - ox, (s.ty + 1) * TILE - 14 - oy, isLit(s) ? 85 : 30, isLit(s) ? 1 : .5);
-  for (const k of pickups) lightHole(k.x + 6 - ox, k.y + 6 - oy, 55);
+  for (const k of pickups) if (!inPocket(cur, k.x + 6, k.y + 6)) lightHole(k.x + 6 - ox, k.y + 6 - oy, 55);
   for (const e of enemies) if (e.alive && e.kind === 'oni') lightHole(e.x + 5 - ox, e.y + 5 - oy, 48);
   for (const hg of cur.deco.hangs) if (hg.lit) lightHole(hg.x + Math.sin(hg.ang) * hg.len - ox, hg.y + hg.len - oy, 58);
   for (const l of cur.deco.lights) lightHole(l.x - ox, l.y - oy, l.r);

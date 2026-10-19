@@ -4,10 +4,10 @@ function buildTerrain(room) {
   g.scale(S, S);
   const rnd = seeded(room.seed + 99);
   const at = (x, y) => (x < 0 || x >= COLS || y < 0 || y >= ROWS) ? '#' : room.grid[y][x];
-  const sol = (x, y) => at(x, y) === '#';
-  const open = (x, y) => { const ch = at(x, y); return ch !== '#' && ch !== 'B'; };
+  const sol = (x, y) => '#X'.includes(at(x, y));
+  const open = (x, y) => !'#BX'.includes(at(x, y));
   const cells = [];
-  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (room.grid[y][x] === '#') cells.push([x, y]);
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if ('#X'.includes(room.grid[y][x])) cells.push([x, y]);
 
   // 1. masa base
   g.fillStyle = T.rock;
@@ -81,6 +81,8 @@ function buildTerrain(room) {
   for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
     const ch = room.grid[y][x];
     if (ch === 'B') barricade(g, x * TILE, y * TILE, at(x, y - 1) !== 'B', at(x, y + 1) !== 'B', rnd);
+    else if (ch === 'X') cracks(g, x * TILE, y * TILE, rnd);
+    else if (ch === 'G') gate(g, x * TILE, y * TILE, at(x - 1, y) === 'G' || at(x + 1, y) === 'G');
     else if (ch === '^') stakes(g, x * TILE, y * TILE, rnd);
   }
   // 7. decorados fijos de cada zona
@@ -207,6 +209,28 @@ function sideEdge(g, T, X, Y, d, rnd) {
   if (T.style === 'block' || T.style === 'wood') return;
   g.fillStyle = T.rock;
   for (let i = 0; i < 2; i++) { if (rnd() < .5) { const r = .7 + rnd() * 1.1; circle(g, X + d * r * .25, Y + 2 + rnd() * 12, r); } }
+}
+// Pared agrietada: casi igual a la roca, con grietas finas como pista
+function cracks(g, X, Y, rnd) {
+  g.save(); g.beginPath(); g.rect(X, Y, TILE, TILE); g.clip();
+  g.lineCap = 'round';
+  for (let k = 0; k < 2; k++) {
+    let x = X + 3 + rnd() * 10, y = Y;
+    g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = .55; g.beginPath(); g.moveTo(x, y);
+    for (let i = 0; i < 5; i++) { x += (rnd() - .5) * 6; y += 3 + rnd() * 1.5; g.lineTo(x, y); }
+    g.stroke();
+    g.strokeStyle = 'rgba(255,240,220,.1)'; g.lineWidth = .3; g.stroke();
+  }
+  g.restore();
+}
+// Portón de madera con herrajes (horizontal si está en un piso)
+function gate(g, X, Y, horiz) {
+  g.fillStyle = '#2a1a10'; g.fillRect(X, Y, TILE, TILE);
+  g.fillStyle = '#5a3c22';
+  for (let k = 0; k < 4; k++) { if (horiz) g.fillRect(X, Y + 1 + k * 3.8, TILE, 3); else g.fillRect(X + 1 + k * 3.8, Y, 3, TILE); }
+  g.fillStyle = '#1a1a22'; if (horiz) { g.fillRect(X + 3, Y, 1.6, TILE); g.fillRect(X + 11.4, Y, 1.6, TILE); } else { g.fillRect(X, Y + 3, TILE, 1.6); g.fillRect(X, Y + 11.4, TILE, 1.6); }
+  g.fillStyle = '#8a8070'; for (const [a, b] of [[3.8, 3.8], [12.2, 3.8], [3.8, 12.2], [12.2, 12.2]]) circle(g, X + a, Y + b, .55);
+  g.strokeStyle = 'rgba(3,2,8,.8)'; g.lineWidth = .5; g.strokeRect(X + .25, Y + .25, TILE - .5, TILE - .5);
 }
 function barricade(g, X, Y, isTop, isBottom, rnd) {
   g.fillStyle = '#0d0907'; g.fillRect(X + 1, Y, 14, TILE);

@@ -3,7 +3,7 @@ function enterRoom(key) {
   if (cur && cur.key !== key) cur.art = null;   // liberar memoria del arte de la sala anterior
   cur = rooms[key];
   setRoomDims(cur); computeScale();
-  enemies = []; pickups = []; shrines = []; amb = []; splats = []; corpses = []; strokes = []; rain = [];
+  enemies = []; pickups = []; shrines = []; levers = []; amb = []; splats = []; corpses = []; strokes = []; rain = [];
   if (!cur.deco) cur.deco = buildDeco(cur);
   for (const tf of cur.deco.tufts) { tf.cut = false; tf.b = 0; }
   for (const hg of cur.deco.hangs) { hg.ang = (Math.random() - .5) * .2; hg.angV = 0; }
@@ -12,9 +12,11 @@ function enterRoom(key) {
     if (e.t === 'e') enemies.push({ kind: 'ashi', x: e.x * TILE + 2, y: e.y * TILE + 2, w: 12, h: 14, vx: 0, vy: 0, dir: Math.random() < 0.5 ? -1 : 1, speed: 28, hp: 2, hurt: 0, kbT: 0, kb: 0, alive: true, onGround: false, anim: Math.random() * 3, st: 'walk', stT: 0, cd: 0 });
     else if (e.t === 'f') enemies.push({ kind: 'oni', x: e.x * TILE + 3, y: e.y * TILE + 3, baseY: e.y * TILE + 3, w: 10, h: 10, dir: Math.random() < 0.5 ? -1 : 1, speed: 34, hp: 1, hurt: 0, alive: true, anim: Math.random() * 6 });
     else if (e.t === 'S') shrines.push({ tx: e.x, ty: e.y, box: { x: e.x * TILE + 1, y: e.y * TILE - 2, w: 14, h: 18 } });
-    else if ('DHR'.includes(e.t) && !save.got.includes(id)) pickups.push({ t: e.t, id, x: e.x * TILE + 2, y: e.y * TILE + 1, w: 12, h: 12, bob: Math.random() * 6 });
+    else if (e.t === 'L') levers.push({ id, x: e.x * TILE + 3, y: e.y * TILE, w: 10, h: 16, on: save.levers.includes(id), swing: 0 });
+    else if ('DHRM'.includes(e.t) && !save.got.includes(id)) pickups.push({ t: e.t, id, x: e.x * TILE + 2, y: e.y * TILE + 1, w: 12, h: 12, bob: Math.random() * 6 });
   }
-  if (!save.visited.includes(key)) { save.visited.push(key); roomLabel = { text: cur.name, theme: cur.theme, t: 3.4, max: 3.4 }; }
+  if (!save.visited.includes(key)) save.visited.push(key);
+  if (cur.zone !== lastZone) { lastZone = cur.zone; roomLabel = { text: cur.zone, theme: cur.theme, t: 3.4, max: 3.4 }; }
   amb = []; ambSeeded = false;
   p.lastSafe = { x: p.x, y: p.y };
 }
@@ -29,8 +31,8 @@ function spawnAtShrine() {
 }
 
 function setupWorld(fresh) {
-  save = fresh ? defaultSave() : (readSave() || defaultSave());
-  buildRooms();
+  save = Object.assign(defaultSave(), fresh ? {} : (readSave() || {}));
+  buildRooms(); lastZone = null; p.maxHp = maxHpFor(save);
   if (!save.shrine) setupStart(); else spawnAtShrine();
   particles = []; banner = null; fade = 1;
   updatePadLocks();
